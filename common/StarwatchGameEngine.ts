@@ -1,6 +1,20 @@
-import { GameEngine, GameEngineOptions, Serializer, TwoVector } from "lance-gg";
+import {
+  GameEngine,
+  GameEngineOptions,
+  InputData,
+  Serializer,
+  TwoVector,
+} from "lance-gg";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import JamesObject from "./james/JamesObject";
+import StarwatchDynamicObject from "./StarwatchDynamicObject";
+
+export type StarwatchInput = {
+  type: "move";
+  x: number;
+  y: number;
+  selected: number;
+};
 
 export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngine> {
   constructor(options: GameEngineOptions) {
@@ -23,9 +37,18 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     serializer.registerClass(JamesObject);
   }
 
-  postStep() {
-    const objects = this.world.queryObjects({});
+  processInput(inputDesc: InputData, playerId: number): void {
+    const input = JSON.parse(inputDesc.input) as StarwatchInput;
+    if (input.type == "move") {
+      const object = this.world.queryObject({ id: input.selected }) as StarwatchDynamicObject;
+      if (object != null) {
+        object.position.x = input.x;
+        object.position.y = input.y;
+      }
+    }
   }
+
+  postStep() {}
 
   serverInit() {
     this.addObjectToWorld(
