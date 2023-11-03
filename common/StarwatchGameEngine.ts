@@ -54,7 +54,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     this.addObjectToWorld(
       new JamesObject(this, null, {
         playerID: 0,
-        position: new TwoVector(0, 0),
+        position: new TwoVector(10, 10),
       })
     );
   }

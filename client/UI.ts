@@ -4,9 +4,11 @@ import { GlowFilter } from "@pixi/filter-glow";
 import StarwatchSprite from "./StarwatchSprite";
 import { clientEngine, ui, viewport } from ".";
 import { StarwatchInput } from "../common/StarwatchGameEngine";
+import Minimap from "./ui/Minimap";
 
 export default class UI extends Container {
   glowFilters = new Map<number, GlowFilter>();
+  minimap = new Minimap();
 
   constructor() {
     super();
@@ -24,12 +26,27 @@ export default class UI extends Container {
       }
     });
 
+    this.minimap = this.addChild(new Minimap());
     this.addChild(new FullscreenButton());
+
+    const ui = this;
+    window.addEventListener("resize", () => ui.resize());
+
+    this.resize();
   }
 
   private selected: number | null = null;
 
-  addSelectableSprite(id: number, sprite: StarwatchSprite) {
+  resize() {
+    this.minimap.x = 0;
+    this.minimap.y = window.innerHeight - 200;
+  }
+
+  draw() {
+    this.minimap.draw();
+  }
+
+  addSprite(id: number, sprite: StarwatchSprite) {
     const glowFilter = new GlowFilter({ quality: 1 });
     glowFilter.enabled = false;
     this.glowFilters.set(id, glowFilter);
@@ -41,6 +58,8 @@ export default class UI extends Container {
     }
 
     sprite.filters!.push(glowFilter);
+
+    this.minimap.addSprite(id, sprite);
   }
 
   select(id: number) {

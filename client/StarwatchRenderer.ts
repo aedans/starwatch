@@ -1,16 +1,16 @@
-import { Sprite } from "pixi.js";
 import { GameObject, PhysicsEngine, Renderer } from "lance-gg";
 import StarwatchGameEngine from "../common/StarwatchGameEngine";
 import StarwatchClientEngine from "./StarwatchClientEngine";
 import SpriteFactory from "./SpriteFactory";
 import { ui, viewport } from ".";
 import StarwatchDynamicObject from "../common/StarwatchDynamicObject";
+import StarwatchSprite from "./StarwatchSprite";
 
 export default class StarwatchRenderer extends Renderer<
   StarwatchGameEngine,
   StarwatchClientEngine
 > {
-  sprites = new Map<number, Sprite>();
+  sprites = new Map<number, StarwatchSprite>();
   spriteFactory = new SpriteFactory();
 
   draw(t: number, dt?: number | undefined): void {
@@ -26,6 +26,8 @@ export default class StarwatchRenderer extends Renderer<
         sprite.y = object.position.y;
       }
     }
+
+    ui.draw();
   }
 
   addObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {
@@ -33,7 +35,7 @@ export default class StarwatchRenderer extends Renderer<
     viewport.addChild(sprite);
     this.sprites.set(obj.id, sprite);
 
-    ui.addSelectableSprite(obj.id, sprite);
+    ui.addSprite(obj.id, sprite);
     sprite.on("click", () => {
       ui.select(obj.id);
     });

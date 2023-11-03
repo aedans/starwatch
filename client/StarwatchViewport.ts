@@ -11,6 +11,14 @@ export default class StarwatchViewport extends Viewport {
       events: app.renderer.events,
     });
 
+    this.setZoom(10);
+    this.clamp({
+      left: 0,
+      top: 0,
+      right: 1000,
+      bottom: 1000,
+    })
+
     const viewport = this;
     window.addEventListener("resize", () => {
       viewport.resize(
@@ -42,8 +50,8 @@ export default class StarwatchViewport extends Viewport {
         const dx = Math.sin(theta);
         const dy = Math.cos(theta);
         viewport.moveCenter(
-          viewport.center.x + dx * delta * 10,
-          viewport.center.y + dy * delta * 10
+          viewport.center.x + dx * delta,
+          viewport.center.y + dy * delta
         );
       }
     });
