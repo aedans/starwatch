@@ -2,12 +2,12 @@ import { Viewport } from "pixi-viewport";
 import { Application, Ticker } from "pixi.js";
 
 export default class StarwatchViewport extends Viewport {
-  constructor(app: Application) {
+  constructor(app: Application, worldWidth: number, worldHeight: number) {
     super({
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
-      worldWidth: 1000,
-      worldHeight: 1000,
+      worldWidth,
+      worldHeight,
       events: app.renderer.events,
     });
 
@@ -15,8 +15,8 @@ export default class StarwatchViewport extends Viewport {
     this.clamp({
       left: 0,
       top: 0,
-      right: 1000,
-      bottom: 1000,
+      right: worldWidth * 2,
+      bottom: worldHeight * 2,
     });
 
     const viewport = this;
@@ -50,8 +50,8 @@ export default class StarwatchViewport extends Viewport {
         const dx = Math.sin(theta);
         const dy = Math.cos(theta);
         viewport.moveCenter(
-          viewport.center.x + dx * delta,
-          viewport.center.y + dy * delta
+          viewport.center.x + dx * delta * 2,
+          viewport.center.y + dy * delta * 2
         );
       }
     });

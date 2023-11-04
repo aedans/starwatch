@@ -1,10 +1,17 @@
 import { ClientEngineInputOptions, GameEngineOptions, Lib } from "lance-gg";
 import StarwatchGameEngine from "../common/StarwatchGameEngine";
 import StarwatchClientEngine from "./StarwatchClientEngine";
-import { Application, Ticker, UPDATE_PRIORITY } from "pixi.js";
+import {
+  Application,
+  SCALE_MODES,
+  Texture,
+  Ticker,
+  UPDATE_PRIORITY,
+} from "pixi.js";
 import StarwatchViewport from "./StarwatchViewport";
 import UI from "./UI";
 import { addStats } from "pixi-stats";
+import StarwatchMap from "./Map";
 
 document.body.addEventListener("contextmenu", (e) => {
   e.preventDefault();
@@ -37,7 +44,21 @@ if (localStorage.getItem("debug") == "true") {
   Ticker.shared.add(stats.update, stats, UPDATE_PRIORITY.UTILITY);
 }
 
-export const viewport = app.stage.addChild(new StarwatchViewport(app));
-export const ui = app.stage.addChild(new UI());
+const { map, tileset } = await StarwatchMap.load("1v1");
+
+const worldWidth = Number.parseInt(map.width) * 10;
+const worldHeight = Number.parseInt(map.height) * 10;
+export const viewport = app.stage.addChild(
+  new StarwatchViewport(app, worldWidth, worldHeight)
+);
+export const ui = app.stage.addChild(new UI(worldWidth, worldHeight));
+
+const mapTexture = Texture.from(`/images/${tileset.image.source}`);
+mapTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST;
+Texture.removeFromCache(mapTexture);
+const minimapTexture = Texture.from(`/images/${tileset.image.source}`);
+
+viewport.addChild(new StarwatchMap(map, tileset, mapTexture));
+ui.minimap.addChild(new StarwatchMap(map, tileset, minimapTexture));
 
 clientEngine.start();

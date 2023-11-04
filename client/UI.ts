@@ -16,7 +16,7 @@ export default class UI extends Container {
   boxSelect = new BoxSelect();
   controlGroups = new Map<string, number[]>();
 
-  constructor() {
+  constructor(public worldWidth: number, public worldHeight: number) {
     super();
 
     document.body.addEventListener("contextmenu", (e) => {
@@ -76,7 +76,7 @@ export default class UI extends Container {
 
   resize() {
     this.minimap.x = 0;
-    this.minimap.y = window.innerHeight - 200;
+    this.minimap.y = window.innerHeight - this.worldHeight;
 
     this.hotkeyPanel.x = window.innerWidth - 200;
     this.hotkeyPanel.y = window.innerHeight - 200;
