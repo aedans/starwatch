@@ -1,6 +1,7 @@
 import { Sprite, Texture } from "pixi.js";
 import StarwatchSprite from "../StarwatchSprite";
-import { ui } from "..";
+import { gameEngine, ui } from "..";
+import Entity from "../../common/Entity";
 
 export default class thisSelect extends Sprite {
   sprites = new Map<number, StarwatchSprite>();
@@ -35,12 +36,26 @@ export default class thisSelect extends Sprite {
       if (e.button == 0) {
         const ids: number[] = [];
         for (const [id, sprite] of this.sprites) {
-          if (sprite.getBounds().intersects(this.getBounds().pad(.1, .1))) {
+          if (sprite.getBounds().intersects(this.getBounds().pad(0.1, 0.1))) {
             ids.push(id);
           }
         }
 
-        ui.select(ids, e.shiftKey);
+        if (
+          ids.length == 1 &&
+          ui.selected.length == 1 &&
+          ids[0] == ui.selected[0]
+        ) {
+          const type = Object.getPrototypeOf(
+            gameEngine.world.queryObject({ id: ids[0] })
+          );
+          const sameType = (
+            gameEngine.world.queryObjects({}) as Entity[]
+          ).filter((e) => Object.getPrototypeOf(e) == type);
+          ui.select(sameType.map(x => x.id), e.shiftKey);
+        } else {
+          ui.select(ids, e.shiftKey);
+        }
       }
     });
   }

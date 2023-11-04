@@ -72,7 +72,7 @@ export default class UI extends Container {
     this.resize();
   }
 
-  private selected: number[] = [];
+  selected: number[] = [];
 
   resize() {
     this.minimap.x = 0;
