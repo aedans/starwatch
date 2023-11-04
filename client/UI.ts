@@ -13,6 +13,7 @@ export default class UI extends Container {
   minimap = new Minimap();
   hotkeyPanel = new HotkeyPanel();
   boxSelect = new BoxSelect();
+  controlGroups = new Map<string, number[]>();
 
   constructor() {
     super();
@@ -32,7 +33,7 @@ export default class UI extends Container {
       e.preventDefault();
     });
 
-    document.body.addEventListener("keypress", (e) => {
+    document.body.addEventListener("keydown", (e) => {
       if (ui.selected != null) {
         if (e.key == "s") {
           const input: StarwatchInput = {
@@ -40,6 +41,15 @@ export default class UI extends Container {
             selected: ui.selected,
           };
           clientEngine.sendInput(JSON.stringify(input), {});
+        }
+
+        if ("1234567890".includes(e.key)) {
+          console.log(this.controlGroups);
+          if (e.ctrlKey) {
+            this.controlGroups.set(e.key, ui.selected);
+          } else if (this.controlGroups.has(e.key)) {
+            ui.select(this.controlGroups.get(e.key) ?? []);
+          }
         }
       }
     });
