@@ -34,7 +34,7 @@ export default class UI extends Container {
         const path = this.mapNavmesh.navmesh.findPath(entity.position, world);
         const input: StarwatchInput = { type: "clear", selected: [selected] };
         clientEngine.sendInput(JSON.stringify(input), {});
-        for (const entry of path ?? []) {
+        for (const entry of path ?? [world]) {
           const input: StarwatchInput = {
             type: "add",
             ability: "m",

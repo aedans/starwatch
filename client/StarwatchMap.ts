@@ -48,8 +48,11 @@ interface Object {
   id: string;
   x: string;
   y: string;
-  width: string;
-  height: string;
+  polygon?: Polygon;
+}
+
+interface Polygon {
+  points: string;
 }
 
 interface Data {

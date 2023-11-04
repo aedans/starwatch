@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Graphics, Point, Polygon, Sprite, Texture } from "pixi.js";
 import { TMXMap } from "./StarwatchMap";
 import { NavMesh, PolyPoints } from "navmesh";
 
@@ -9,23 +9,23 @@ export default class MapNavmesh extends Container {
     super();
 
     const polygons: PolyPoints[] = [];
-    for (const object of tmxmap.objectgroup.object.filter(
-      (x) => x.width && x.height
-    )) {
-      const sprite = new Sprite(Texture.WHITE);
-      sprite.tint = Math.random() * 0xffffff;
+    for (const object of tmxmap.objectgroup.object.filter(o => o.polygon)) {
+      const points = object.polygon!.points
+        .split(" ")
+        .map((p) => p.split(","))
+        .map(([x, y]) => ({ x: Number.parseInt(x), y: Number.parseInt(y) }));
+
+      const sprite = new Graphics();
+      sprite.beginFill(Math.random() * 0xffffff);
+      sprite.drawPolygon(points.map((p) => new Point(p.x, p.y)));
       sprite.x = Number.parseInt(object.x);
       sprite.y = Number.parseInt(object.y);
-      sprite.width = Number.parseInt(object.width);
-      sprite.height = Number.parseInt(object.height);
+      sprite.alpha = 0.5;
       this.addChild(sprite);
 
-      polygons.push([
-        { x: sprite.x, y: sprite.y },
-        { x: sprite.x + sprite.width, y: sprite.y },
-        { x: sprite.x + sprite.width, y: sprite.y + sprite.height },
-        { x: sprite.x, y: sprite.y + sprite.height },
-      ]);
+      polygons.push(
+        points.map((p) => ({ x: p.x + sprite.x, y: p.y + sprite.y }))
+      );
     }
 
     this.navmesh = new NavMesh(polygons);
