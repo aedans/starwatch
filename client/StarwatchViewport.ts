@@ -17,7 +17,7 @@ export default class StarwatchViewport extends Viewport {
       top: 0,
       right: 1000,
       bottom: 1000,
-    })
+    });
 
     const viewport = this;
     window.addEventListener("resize", () => {

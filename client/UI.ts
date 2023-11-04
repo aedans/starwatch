@@ -21,7 +21,7 @@ export default class UI extends Container {
       if (ui.selected != null) {
         const world = viewport.toWorld(e.clientX, e.clientY);
         const input: StarwatchInput = {
-          type: "set",
+          type: e.shiftKey ? "add" : "set",
           ability: "m",
           x: world.x,
           y: world.y,
@@ -29,6 +29,7 @@ export default class UI extends Container {
         };
         clientEngine.sendInput(JSON.stringify(input), {});
       }
+      e.preventDefault();
     });
 
     document.body.addEventListener("keypress", (e) => {

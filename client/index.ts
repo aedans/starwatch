@@ -31,10 +31,6 @@ const app = new Application<HTMLCanvasElement>({
 
 document.body.appendChild(app.view);
 
-document.body.addEventListener("contextmenu", (e) => {
-  e.preventDefault();
-});
-
 if (localStorage.getItem("debug") == "true") {
   const stats = addStats(document, app);
   (stats as any).stats.showPanel(1);

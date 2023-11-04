@@ -11,7 +11,7 @@ import Entity, { AbilityKey } from "./Entity";
 
 export type StarwatchInput =
   | {
-      type: "set";
+      type: "set" | "add";
       ability: AbilityKey;
       x: number;
       y: number;
@@ -40,11 +40,17 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
   processInput(inputDesc: InputData, playerId: number): void {
     const input = JSON.parse(inputDesc.input) as StarwatchInput;
-    if (input.type == "set") {
+    if (input.type == "set" || input.type == "add") {
       for (const id of input.selected) {
         const object = this.world.queryObject({ id }) as Entity;
         if (object != null) {
-          object.setAction({ ability: input.ability, x: input.x, y: input.y });
+          const f = input.type == "set" ? "setAction" : ("addAction" as const);
+          object[f]({
+            ability: input.ability,
+            x: input.x,
+            y: input.y,
+            ids: input.selected,
+          });
         }
       }
     } else if (input.type == "clear") {

@@ -21,7 +21,12 @@ export type AbilityKey =
   | "v"
   | "m";
 
-export type Action = { ability: AbilityKey; x: number; y: number };
+export type Action = {
+  ability: AbilityKey;
+  x: number;
+  y: number;
+  ids: number[];
+};
 
 export type Ability = (
   engine: StarwatchGameEngine,
@@ -67,8 +72,7 @@ export default abstract class Entity extends PhysicalObject2D<
       const dy = action.y - entity.position.y;
 
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < this.speed / 1000) {
-        entity.position = new TwoVector(action.x, action.y);
+      if (distance < Math.sqrt((action.ids.length * 8) / Math.PI)) {
         entity.velocity = new TwoVector(0, 0);
         entity.refreshToPhysics();
         return false;
@@ -76,7 +80,7 @@ export default abstract class Entity extends PhysicalObject2D<
 
       const angle = Math.atan2(dy, dx);
       entity.angle = angle;
-      const speed = Math.min(this.speed, this.speed * (distance / 10));
+      const speed = Math.min(this.speed, this.speed * (distance / 2));
       entity.velocity = new TwoVector(
         Math.cos(angle) * speed,
         Math.sin(angle) * speed
@@ -91,7 +95,7 @@ export default abstract class Entity extends PhysicalObject2D<
 
   postStep(gameEngine: StarwatchGameEngine) {
     if (this.queue.length > 0) {
-      const action = JSON.parse(this.queue[0]) as Action;
+      const action = JSON.parse(this.queue[this.queue.length - 1]) as Action;
       if (!this.abilities[action.ability]?.(gameEngine, this, action)) {
         this.queue.pop();
       }
@@ -108,6 +112,10 @@ export default abstract class Entity extends PhysicalObject2D<
 
   setAction(action: Action) {
     this.queue = [JSON.stringify(action)];
+  }
+
+  addAction(action: Action) {
+    this.queue.unshift(JSON.stringify(action));
   }
 
   static get netScheme() {
