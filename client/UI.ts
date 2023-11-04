@@ -2,11 +2,12 @@ import { Container } from "pixi.js";
 import FullscreenButton from "./ui/FullscreenButton";
 import { GlowFilter } from "@pixi/filter-glow";
 import StarwatchSprite from "./StarwatchSprite";
-import { clientEngine, viewport } from ".";
+import { clientEngine, gameEngine, viewport } from ".";
 import { StarwatchInput } from "../common/StarwatchGameEngine";
 import Minimap from "./ui/Minimap";
 import HotkeyPanel from "./ui/HotkeyPanel";
 import BoxSelect from "./ui/BoxSelect";
+import Entity from "../common/Entity";
 
 export default class UI extends Container {
   glowFilters = new Map<number, GlowFilter>();
@@ -34,6 +35,10 @@ export default class UI extends Container {
     });
 
     document.body.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() == "f2") {
+        this.select((gameEngine.world.queryObjects({}) as Entity[]).map(x => x.id), false);
+      }
+
       if (ui.selected != null) {
         if (e.key == "s") {
           const input: StarwatchInput = {
