@@ -37,9 +37,6 @@ export default class StarwatchRenderer extends Renderer<
     this.sprites.set(obj.id, sprite);
 
     ui.addSprite(obj.id, sprite);
-    sprite.on("click", () => {
-      ui.select(obj.id);
-    });
   }
 
   removeObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {

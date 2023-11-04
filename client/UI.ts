@@ -6,11 +6,13 @@ import { clientEngine, viewport } from ".";
 import { StarwatchInput } from "../common/StarwatchGameEngine";
 import Minimap from "./ui/Minimap";
 import HotkeyPanel from "./ui/HotkeyPanel";
+import BoxSelect from "./ui/BoxSelect";
 
 export default class UI extends Container {
   glowFilters = new Map<number, GlowFilter>();
   minimap = new Minimap();
   hotkeyPanel = new HotkeyPanel();
+  boxSelect = new BoxSelect();
 
   constructor() {
     super();
@@ -29,8 +31,9 @@ export default class UI extends Container {
       }
     });
 
-    this.minimap = this.addChild(new Minimap());
-    this.hotkeyPanel = this.addChild(new HotkeyPanel());
+    this.addChild(this.minimap);
+    this.addChild(this.hotkeyPanel);
+    this.addChild(this.boxSelect);
     this.addChild(new FullscreenButton());
 
     const ui = this;
@@ -45,7 +48,7 @@ export default class UI extends Container {
     this.minimap.x = 0;
     this.minimap.y = window.innerHeight - 200;
 
-    this.hotkeyPanel.x = window.innerWidth - 200;;
+    this.hotkeyPanel.x = window.innerWidth - 200;
     this.hotkeyPanel.y = window.innerHeight - 200;
   }
 
@@ -55,7 +58,7 @@ export default class UI extends Container {
   }
 
   addSprite(id: number, sprite: StarwatchSprite) {
-    const glowFilter = new GlowFilter({ quality: 1 });
+    const glowFilter = new GlowFilter({ quality: 1, color: 0x00ff00 });
     glowFilter.enabled = false;
     this.glowFilters.set(id, glowFilter);
 
@@ -68,16 +71,20 @@ export default class UI extends Container {
     sprite.filters!.push(glowFilter);
 
     this.minimap.addSprite(id, sprite);
+    this.boxSelect.addSprite(id, sprite);
   }
 
-  select(id: number) {
+  select(ids: number[]) {
     if (this.selected) {
       for (const selected of this.selected) {
         this.glowFilters.get(selected)!.enabled = false;
       }
     }
 
-    this.glowFilters.get(id)!.enabled = true;
-    this.selected = [id];
+    for (const id of ids) {
+      this.glowFilters.get(id)!.enabled = true;
+    }
+
+    this.selected = ids;
   }
 }
