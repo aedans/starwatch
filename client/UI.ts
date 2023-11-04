@@ -31,6 +31,18 @@ export default class UI extends Container {
       }
     });
 
+    document.body.addEventListener("keypress", (e) => {
+      if (ui.selected != null) {
+        if (e.key == "s") {
+          const input: StarwatchInput = {
+            type: "clear",
+            selected: ui.selected,
+          };
+          clientEngine.sendInput(JSON.stringify(input), {});
+        }
+      }
+    });
+
     this.addChild(this.minimap);
     this.addChild(this.hotkeyPanel);
     this.addChild(this.boxSelect);

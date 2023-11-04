@@ -102,6 +102,10 @@ export default abstract class Entity extends PhysicalObject2D<
     return this.queue.map((x) => JSON.parse(x) as Action);
   }
 
+  clearActions() {
+    this.queue = [];
+  }
+
   setAction(action: Action) {
     this.queue = [JSON.stringify(action)];
   }

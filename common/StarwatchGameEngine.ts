@@ -9,13 +9,18 @@ import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import James from "./james/James";
 import Entity, { AbilityKey } from "./Entity";
 
-export type StarwatchInput = {
-  type: "set";
-  ability: AbilityKey;
-  x: number;
-  y: number;
-  selected: number[];
-};
+export type StarwatchInput =
+  | {
+      type: "set";
+      ability: AbilityKey;
+      x: number;
+      y: number;
+      selected: number[];
+    }
+  | {
+      type: "clear";
+      selected: number[];
+    };
 
 export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngine> {
   constructor(options: GameEngineOptions) {
@@ -24,8 +29,6 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     this.physicsEngine = new StarwatchPhysicsEngine({
       gameEngine: this,
     });
-
-    // console.log(this.physicsEngine.world.defaultContactMaterial)
 
     this.on("postStep", this.postStep.bind(this));
     this.on("server__init", this.serverInit.bind(this));
@@ -42,6 +45,13 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
         const object = this.world.queryObject({ id }) as Entity;
         if (object != null) {
           object.setAction({ ability: input.ability, x: input.x, y: input.y });
+        }
+      }
+    } else if (input.type == "clear") {
+      for (const id of input.selected) {
+        const object = this.world.queryObject({ id }) as Entity;
+        if (object != null) {
+          object.clearActions();
         }
       }
     }
