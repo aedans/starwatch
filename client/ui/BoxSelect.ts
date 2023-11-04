@@ -41,18 +41,17 @@ export default class thisSelect extends Sprite {
           }
         }
 
-        if (
-          ids.length == 1 &&
-          ui.selected.length == 1 &&
-          ids[0] == ui.selected[0]
-        ) {
+        if (JSON.stringify(ids) == JSON.stringify(ui.selected)) {
           const type = Object.getPrototypeOf(
             gameEngine.world.queryObject({ id: ids[0] })
           );
           const sameType = (
             gameEngine.world.queryObjects({}) as Entity[]
           ).filter((e) => Object.getPrototypeOf(e) == type);
-          ui.select(sameType.map(x => x.id), e.shiftKey);
+          ui.select(
+            sameType.map((x) => x.id),
+            e.shiftKey
+          );
         } else {
           ui.select(ids, e.shiftKey);
         }
