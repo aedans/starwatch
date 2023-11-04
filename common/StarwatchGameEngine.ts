@@ -7,9 +7,7 @@ import {
 } from "lance-gg";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import James from "./james/James";
-import Entity from "./Entity";
-import Action from "./Action";
-import { AbilityKey } from "./Ability";
+import Entity, { AbilityKey } from "./Entity";
 
 export type StarwatchInput = {
   type: "set";
@@ -25,10 +23,6 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
     this.physicsEngine = new StarwatchPhysicsEngine({
       gameEngine: this,
-      collisions: {
-        type: "bruteForce",
-      },
-      gravity: new TwoVector(0, 0),
     });
 
     this.on("postStep", this.postStep.bind(this));
@@ -45,18 +39,23 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       for (const id of input.selected) {
         const object = this.world.queryObject({ id }) as Entity;
         if (object != null) {
-          object.abilities[input.ability]?.(this, object, input.x, input.y);
+          object.setAction({ ability: input.ability, x: input.x, y: input.y });
         }
       }
     }
   }
 
-  postStep() {}
+  postStep() {
+    for (const entity of this.world.queryObjects({}) as Entity[]) {
+      entity.postStep(this);
+      entity.refreshFromPhysics();
+    }
+  }
 
   serverInit() {
     this.addObjectToWorld(
-      new James(this, null, {
-        playerID: 0,
+      new James(this, {
+        playerId: 0,
         position: new TwoVector(10, 10),
       })
     );

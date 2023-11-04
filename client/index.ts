@@ -12,11 +12,12 @@ document.body.addEventListener("contextmenu", (e) => {
 
 const options: GameEngineOptions & ClientEngineInputOptions = {
   traceLevel: Lib.Trace.TRACE_NONE,
+  delayInputCount: 5,
   scheduler: "render-schedule",
   syncOptions: {
     sync: "extrapolate",
-    localObjBending: 0.2,
-    remoteObjBending: 0.5,
+    localObjBending: 0.8,
+    remoteObjBending: 1.0,
   },
   serverURL: window.location.toString().replace("5173", "8080"),
 } as const;

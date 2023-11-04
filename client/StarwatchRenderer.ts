@@ -22,6 +22,7 @@ export default class StarwatchRenderer extends Renderer<
       }) as Entity;
 
       if (object != null) {
+        sprite.rotation = object.angle;
         sprite.x = object.position.x;
         sprite.y = object.position.y;
       }
