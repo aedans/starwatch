@@ -40,7 +40,7 @@ export default class thisSelect extends Sprite {
           }
         }
 
-        ui.select(ids);
+        ui.select(ids, e.shiftKey);
       }
     });
   }

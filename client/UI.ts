@@ -44,11 +44,10 @@ export default class UI extends Container {
         }
 
         if ("1234567890".includes(e.key)) {
-          console.log(this.controlGroups);
           if (e.ctrlKey) {
             this.controlGroups.set(e.key, ui.selected);
           } else if (this.controlGroups.has(e.key)) {
-            ui.select(this.controlGroups.get(e.key) ?? []);
+            ui.select(this.controlGroups.get(e.key) ?? [], e.shiftKey);
           }
         }
       }
@@ -97,8 +96,8 @@ export default class UI extends Container {
     this.boxSelect.addSprite(id, sprite);
   }
 
-  select(ids: number[]) {
-    if (this.selected) {
+  select(ids: number[], append: boolean) {
+    if (this.selected && !append) {
       for (const selected of this.selected) {
         this.glowFilters.get(selected)!.enabled = false;
       }
@@ -108,6 +107,10 @@ export default class UI extends Container {
       this.glowFilters.get(id)!.enabled = true;
     }
 
-    this.selected = ids;
+    if (append) {
+      this.selected.push(...ids);
+    } else {
+      this.selected = ids;
+    }
   }
 }
