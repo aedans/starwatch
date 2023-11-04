@@ -28,24 +28,24 @@ export default class UI extends Container {
     super();
 
     document.body.addEventListener("contextmenu", (e) => {
+      const inputs: StarwatchInput[] = [];
       for (const selected of ui.selected) {
         const entity = gameEngine.world.queryObject({ id: selected }) as Entity;
         const world = viewport.toWorld(e.clientX, e.clientY);
         const path = this.mapNavmesh.navmesh.findPath(entity.position, world);
-        const input: StarwatchInput = { type: "clear", selected: [selected] };
-        clientEngine.sendInput(JSON.stringify(input), {});
-        for (const entry of path ?? [world]) {
-          const input: StarwatchInput = {
+        inputs.push({ type: "clear", selected: [selected] });
+        for (const entry of path?.slice(1) ?? [world]) {
+          inputs.push({
             type: "add",
             ability: "m",
             x: entry.x,
             y: entry.y,
             group: ui.selected.length,
             selected,
-          };
-          clientEngine.sendInput(JSON.stringify(input), {});
+          });
         }
       }
+      clientEngine.sendInput(JSON.stringify(inputs), {});
       e.preventDefault();
     });
 
@@ -63,7 +63,7 @@ export default class UI extends Container {
             type: "clear",
             selected: ui.selected,
           };
-          clientEngine.sendInput(JSON.stringify(input), {});
+          clientEngine.sendInput(JSON.stringify([input]), {});
         }
 
         if ("1234567890".includes(e.key)) {

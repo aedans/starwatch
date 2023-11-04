@@ -40,22 +40,24 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
-    const input = JSON.parse(inputDesc.input) as StarwatchInput;
-    if (input.type == "add") {
-      const object = this.world.queryObject({ id: input.selected }) as Entity;
-      if (object != null) {
-        object.addAction({
-          ability: input.ability,
-          x: input.x,
-          y: input.y,
-          group: input.group,
-        });
-      }
-    } else if (input.type == "clear") {
-      for (const id of input.selected) {
-        const object = this.world.queryObject({ id }) as Entity;
+    const inputs = JSON.parse(inputDesc.input) as StarwatchInput[];
+    for (const input of inputs) {
+      if (input.type == "add") {
+        const object = this.world.queryObject({ id: input.selected }) as Entity;
         if (object != null) {
-          object.clearActions();
+          object.addAction({
+            ability: input.ability,
+            x: input.x,
+            y: input.y,
+            group: input.group,
+          });
+        }
+      } else if (input.type == "clear") {
+        for (const id of input.selected) {
+          const object = this.world.queryObject({ id }) as Entity;
+          if (object != null) {
+            object.clearActions();
+          }
         }
       }
     }
