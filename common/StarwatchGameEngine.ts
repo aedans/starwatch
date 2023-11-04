@@ -6,14 +6,17 @@ import {
   TwoVector,
 } from "lance-gg";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
-import JamesObject from "./james/JamesObject";
-import StarwatchDynamicObject from "./StarwatchDynamicObject";
+import James from "./james/James";
+import Entity from "./Entity";
+import Action from "./Action";
+import { AbilityKey } from "./Ability";
 
 export type StarwatchInput = {
-  type: "move";
+  type: "set";
+  ability: AbilityKey;
   x: number;
   y: number;
-  selected: number;
+  selected: number[];
 };
 
 export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngine> {
@@ -33,17 +36,17 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   registerClasses(serializer: Serializer): void {
-    super.registerClasses(serializer);
-    serializer.registerClass(JamesObject);
+    serializer.registerClass(James);
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
     const input = JSON.parse(inputDesc.input) as StarwatchInput;
-    if (input.type == "move") {
-      const object = this.world.queryObject({ id: input.selected }) as StarwatchDynamicObject;
-      if (object != null) {
-        object.position.x = input.x;
-        object.position.y = input.y;
+    if (input.type == "set") {
+      for (const id of input.selected) {
+        const object = this.world.queryObject({ id }) as Entity;
+        if (object != null) {
+          object.abilities[input.ability]?.(this, object, input.x, input.y);
+        }
       }
     }
   }
@@ -52,7 +55,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
   serverInit() {
     this.addObjectToWorld(
-      new JamesObject(this, null, {
+      new James(this, null, {
         playerID: 0,
         position: new TwoVector(10, 10),
       })

@@ -3,7 +3,7 @@ import StarwatchGameEngine from "../common/StarwatchGameEngine";
 import StarwatchClientEngine from "./StarwatchClientEngine";
 import SpriteFactory from "./SpriteFactory";
 import { ui, viewport } from ".";
-import StarwatchDynamicObject from "../common/StarwatchDynamicObject";
+import Entity from "../common/Entity";
 import StarwatchSprite from "./StarwatchSprite";
 
 export default class StarwatchRenderer extends Renderer<
@@ -19,7 +19,7 @@ export default class StarwatchRenderer extends Renderer<
     for (const [id, sprite] of this.sprites.entries()) {
       const object = this.gameEngine.world.queryObject({
         id,
-      }) as StarwatchDynamicObject;
+      }) as Entity;
 
       if (object != null) {
         sprite.x = object.position.x;

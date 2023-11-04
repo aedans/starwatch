@@ -1,6 +1,6 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import StarwatchSprite from "../StarwatchSprite";
-import StarwatchDynamicObject from "../../common/StarwatchDynamicObject";
+import Entity from "../../common/Entity";
 import { gameEngine, viewport } from "..";
 
 export default class Minimap extends Container {
@@ -29,7 +29,7 @@ export default class Minimap extends Container {
     for (const [id, sprite] of this.icons.entries()) {
       const object = gameEngine.world.queryObject({
         id,
-      }) as StarwatchDynamicObject;
+      }) as Entity;
 
       if (object != null) {
         sprite.x = object.position.x;
