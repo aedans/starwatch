@@ -25,6 +25,8 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       gameEngine: this,
     });
 
+    // console.log(this.physicsEngine.world.defaultContactMaterial)
+
     this.on("postStep", this.postStep.bind(this));
     this.on("server__init", this.serverInit.bind(this));
   }
@@ -47,8 +49,11 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
   postStep() {
     for (const entity of this.world.queryObjects({}) as Entity[]) {
-      entity.postStep(this);
       entity.refreshFromPhysics();
+      entity.velocity = new TwoVector(0, 0);
+      entity.angularVelocity = 0;
+      entity.refreshToPhysics();
+      entity.postStep(this);
     }
   }
 

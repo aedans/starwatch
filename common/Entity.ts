@@ -41,10 +41,17 @@ export default abstract class Entity extends PhysicalObject2D<
 
   onAddToWorld(): void {
     this.physicsObj = new this.gameEngine.physicsEngine.p2.Body({
-      mass: 0,
+      mass: 1,
       position: [this.position.x, this.position.y],
       velocity: [this.velocity.x, this.velocity.y],
     });
+
+    this.physicsObj.addShape(
+      new this.gameEngine.physicsEngine.p2.Circle({
+        radius: 2,
+      })
+    );
+
     this.gameEngine.physicsEngine.world.addBody(this.physicsObj);
   }
 
