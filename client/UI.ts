@@ -36,7 +36,10 @@ export default class UI extends Container {
 
     document.body.addEventListener("keydown", (e) => {
       if (e.key.toLowerCase() == "f2") {
-        this.select((gameEngine.world.queryObjects({}) as Entity[]).map(x => x.id), false);
+        this.select(
+          (gameEngine.world.queryObjects({}) as Entity[]).map((x) => x.id),
+          false
+        );
       }
 
       if (ui.selected != null) {
@@ -113,7 +116,7 @@ export default class UI extends Container {
     }
 
     if (append) {
-      this.selected.push(...ids);
+      this.selected.push(...ids.filter((x) => !this.selected.includes(x)));
     } else {
       this.selected = ids;
     }
