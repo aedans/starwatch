@@ -53,11 +53,13 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   serverInit() {
-    this.addObjectToWorld(
-      new James(this, {
-        playerId: 0,
-        position: new TwoVector(10, 10),
-      })
-    );
+    for (let i = 0; i < 10; i++) {
+      this.addObjectToWorld(
+        new James(this, {
+          playerId: 0,
+          position: new TwoVector(10 * i, 10),
+        })
+      );
+    }
   }
 }

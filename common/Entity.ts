@@ -59,7 +59,8 @@ export default abstract class Entity extends PhysicalObject2D<
       const dx = action.x - entity.position.x;
       const dy = action.y - entity.position.y;
 
-      if (Math.sqrt(dx * dx + dy * dy) < .2) {
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < this.speed / 1000) {
         entity.position = new TwoVector(action.x, action.y);
         entity.velocity = new TwoVector(0, 0);
         entity.refreshToPhysics();
@@ -68,9 +69,10 @@ export default abstract class Entity extends PhysicalObject2D<
 
       const angle = Math.atan2(dy, dx);
       entity.angle = angle;
+      const speed = Math.min(this.speed, this.speed * (distance / 10));
       entity.velocity = new TwoVector(
-        Math.cos(angle) * this.speed,
-        Math.sin(angle) * this.speed
+        Math.cos(angle) * speed,
+        Math.sin(angle) * speed
       );
       entity.refreshToPhysics();
 

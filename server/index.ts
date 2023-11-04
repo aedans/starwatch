@@ -24,9 +24,6 @@ server.listen(port, () => {
 });
 
 const gameEngine = new StarwatchGameEngine({ traceLevel: Lib.Trace.TRACE_ALL });
-const serverEngine = new ServerEngine(io, gameEngine, {
-  debug: {},
-  updateRate: 6,
-});
+const serverEngine = new ServerEngine(io, gameEngine);
 
 serverEngine.start();
