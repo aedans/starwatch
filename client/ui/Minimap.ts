@@ -13,7 +13,9 @@ export default class Minimap extends Container {
     this.scale.x = this.scale.y = 0.5;
     this.sortableChildren = true;
 
-    this.viewportSprite.tint = 0x444444;
+    this.viewportSprite.tint = 0x555555;
+    this.viewportSprite.alpha = 0.5;
+    this.viewportSprite.zIndex = 1;
     this.addChild(this.viewportSprite);
   }
 
@@ -22,8 +24,6 @@ export default class Minimap extends Container {
     this.viewportSprite.y = viewport.top;
     this.viewportSprite.width = viewport.worldScreenWidth;
     this.viewportSprite.height = viewport.worldScreenHeight;
-    this.viewportSprite.alpha = 0.5;
-    this.viewportSprite.zIndex = 1;
 
     for (const [id, sprite] of this.icons.entries()) {
       const object = gameEngine.world.queryObject({

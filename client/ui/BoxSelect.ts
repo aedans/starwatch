@@ -2,6 +2,7 @@ import { Sprite, Texture } from "pixi.js";
 import StarwatchSprite from "../StarwatchSprite";
 import { gameEngine, ui } from "..";
 import Entity from "../../common/Entity";
+import { OutlineFilter } from "@pixi/filter-outline";
 
 export default class thisSelect extends Sprite {
   sprites = new Map<number, StarwatchSprite>();
@@ -11,6 +12,7 @@ export default class thisSelect extends Sprite {
     this.tint = 0x00ff00;
     this.alpha = 0.5;
     this.visible = false;
+    this.filters = [new OutlineFilter(1, 0x00ff00)];
 
     document.body.addEventListener("mousedown", (e) => {
       if (e.button == 0) {
@@ -41,7 +43,11 @@ export default class thisSelect extends Sprite {
           }
         }
 
-        if (JSON.stringify(ids) == JSON.stringify(ui.selected)) {
+        if (
+          ids.length > 0 &&
+          ui.selected.length > 0 &&
+          JSON.stringify(ids) == JSON.stringify(ui.selected)
+        ) {
           const type = Object.getPrototypeOf(
             gameEngine.world.queryObject({ id: ids[0] })
           );

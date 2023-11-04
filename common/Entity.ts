@@ -25,7 +25,7 @@ export type Action = {
   ability: AbilityKey;
   x: number;
   y: number;
-  ids: number[];
+  group: number;
 };
 
 export type Ability = (
@@ -72,7 +72,7 @@ export default abstract class Entity extends PhysicalObject2D<
       const dy = action.y - entity.position.y;
 
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < Math.sqrt((action.ids.length * 8) / Math.PI)) {
+      if (distance < Math.sqrt((action.group * 8) / Math.PI)) {
         entity.velocity = new TwoVector(0, 0);
         entity.refreshToPhysics();
         return false;
@@ -108,10 +108,6 @@ export default abstract class Entity extends PhysicalObject2D<
 
   clearActions() {
     this.queue = [];
-  }
-
-  setAction(action: Action) {
-    this.queue = [JSON.stringify(action)];
   }
 
   addAction(action: Action) {

@@ -11,7 +11,8 @@ import {
 import StarwatchViewport from "./StarwatchViewport";
 import UI from "./UI";
 import { addStats } from "pixi-stats";
-import StarwatchMap from "./Map";
+import StarwatchMap from "./StarwatchMap";
+import MapNavmesh from "./MapNavmesh";
 
 document.body.addEventListener("contextmenu", (e) => {
   e.preventDefault();
@@ -51,14 +52,16 @@ const worldHeight = Number.parseInt(map.height) * 10;
 export const viewport = app.stage.addChild(
   new StarwatchViewport(app, worldWidth, worldHeight)
 );
-export const ui = app.stage.addChild(new UI(worldWidth, worldHeight));
 
 const mapTexture = Texture.from(`/images/${tileset.image.source}`);
 mapTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST;
 Texture.removeFromCache(mapTexture);
-const minimapTexture = Texture.from(`/images/${tileset.image.source}`);
+
+export const ui = app.stage.addChild(
+  new UI(map, tileset, worldWidth, worldHeight)
+);
 
 viewport.addChild(new StarwatchMap(map, tileset, mapTexture));
-ui.minimap.addChild(new StarwatchMap(map, tileset, minimapTexture));
+viewport.addChild(new MapNavmesh(map));
 
 clientEngine.start();

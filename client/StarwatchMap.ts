@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { SCALE_MODES, Spritesheet, Texture } from "pixi.js";
+import { Texture } from "pixi.js";
 import { CompositeTilemap } from "@pixi/tilemap";
 
 const parser = new XMLParser({
@@ -10,19 +10,13 @@ const parser = new XMLParser({
 });
 
 export interface TMXMap {
-  "?xml": XML;
   map: Map;
 }
 
-export interface XML {
-  version: string;
-  encoding: string;
-}
-
-export interface Map {
-  editorsettings: Editorsettings;
+interface Map {
   tileset: TilesetRef;
   layer: Layer;
+  objectgroup: ObjectGroup;
   version: string;
   tiledversion: string;
   orientation: string;
@@ -36,16 +30,7 @@ export interface Map {
   nextobjectid: string;
 }
 
-export interface Editorsettings {
-  export: Export;
-}
-
-export interface Export {
-  target: string;
-  format: string;
-}
-
-export interface Layer {
+interface Layer {
   data: Data;
   id: string;
   name: string;
@@ -53,27 +38,35 @@ export interface Layer {
   height: string;
 }
 
-export interface Data {
+interface ObjectGroup {
+  id: string;
+  name: string;
+  object: Object[];
+}
+
+interface Object {
+  id: string;
+  x: string;
+  y: string;
+  width: string;
+  height: string;
+}
+
+interface Data {
   text: string;
   encoding: string;
 }
 
-export interface TilesetRef {
+interface TilesetRef {
   firstgid: string;
   source: string;
 }
 
 export interface TSXTileset {
-  "?xml": XML;
   tileset: Tileset;
 }
 
-export interface XML {
-  version: string;
-  encoding: string;
-}
-
-export interface Tileset {
+interface Tileset {
   image: Image;
   version: string;
   tiledversion: string;
@@ -84,7 +77,7 @@ export interface Tileset {
   columns: string;
 }
 
-export interface Image {
+interface Image {
   source: string;
   width: string;
   height: string;
@@ -92,13 +85,13 @@ export interface Image {
 
 export default class StarwatchMap extends CompositeTilemap {
   constructor(
-    public tsxmap: TMXMap["map"],
+    public tmxmap: TMXMap["map"],
     public tsxtileset: TSXTileset["tileset"],
     texture: Texture
   ) {
     super();
 
-    for (const [string, row] of tsxmap.layer.data.text
+    for (const [string, row] of tmxmap.layer.data.text
       .split("\n")
       .map((a, i) => [a, i] as const)) {
       for (const [id, col] of string
@@ -107,7 +100,7 @@ export default class StarwatchMap extends CompositeTilemap {
         .map(
           (x, i) =>
             [
-              Number.parseInt(x) - Number.parseInt(tsxmap.tileset.firstgid),
+              Number.parseInt(x) - Number.parseInt(tmxmap.tileset.firstgid),
               i,
             ] as const
         )) {

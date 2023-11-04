@@ -11,11 +11,12 @@ import Entity, { AbilityKey } from "./Entity";
 
 export type StarwatchInput =
   | {
-      type: "set" | "add";
+      type: "add";
       ability: AbilityKey;
       x: number;
       y: number;
-      selected: number[];
+      group: number;
+      selected: number;
     }
   | {
       type: "clear";
@@ -40,18 +41,15 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
   processInput(inputDesc: InputData, playerId: number): void {
     const input = JSON.parse(inputDesc.input) as StarwatchInput;
-    if (input.type == "set" || input.type == "add") {
-      for (const id of input.selected) {
-        const object = this.world.queryObject({ id }) as Entity;
-        if (object != null) {
-          const f = input.type == "set" ? "setAction" : ("addAction" as const);
-          object[f]({
-            ability: input.ability,
-            x: input.x,
-            y: input.y,
-            ids: input.selected,
-          });
-        }
+    if (input.type == "add") {
+      const object = this.world.queryObject({ id: input.selected }) as Entity;
+      if (object != null) {
+        object.addAction({
+          ability: input.ability,
+          x: input.x,
+          y: input.y,
+          group: input.group,
+        });
       }
     } else if (input.type == "clear") {
       for (const id of input.selected) {
@@ -74,15 +72,15 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   serverInit() {
-    // for (let x = 1; x <= 10; x++) {
-    //   for (let y = 1; y <= 10; y++) {
-    //     this.addObjectToWorld(
-    //       new James(this, {
-    //         playerId: 0,
-    //         position: new TwoVector(10 * x, 10 * y),
-    //       })
-    //     );
-    //   }
-    // }
+    for (let x = 1; x <= 2; x++) {
+      for (let y = 1; y <= 2; y++) {
+        this.addObjectToWorld(
+          new James(this, {
+            playerId: 0,
+            position: new TwoVector(100 + x, 100 + y),
+          })
+        );
+      }
+    }
   }
 }
