@@ -77,10 +77,11 @@ export default class thisSelect extends Sprite {
           ).filter((e) => Object.getPrototypeOf(e) == type);
           ui.select(
             sameType.map((x) => x.id),
-            e.shiftKey
+            e.shiftKey,
+            false
           );
         } else {
-          ui.select(ids, e.shiftKey);
+          ui.select(ids, e.shiftKey, false);
         }
       }
     });

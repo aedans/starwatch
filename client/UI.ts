@@ -54,12 +54,17 @@ export default class UI extends Container {
     });
 
     document.body.addEventListener("keydown", (e) => {
+      if (e.repeat) {
+        return;
+      }
+
       if (e.key.toLowerCase() == "f2") {
         this.select(
           (gameEngine.world.queryObjects({}) as Entity[])
             .filter((x) => !x.isDecorative)
             .map((x) => x.id),
-          false
+          false,
+          true
         );
       }
 
@@ -76,7 +81,7 @@ export default class UI extends Container {
           if (e.ctrlKey) {
             this.controlGroups.set(e.key, ui.selected);
           } else if (this.controlGroups.has(e.key)) {
-            ui.select(this.controlGroups.get(e.key) ?? [], e.shiftKey);
+            ui.select(this.controlGroups.get(e.key) ?? [], e.shiftKey, true);
           }
         }
       }
@@ -145,8 +150,9 @@ export default class UI extends Container {
     this.boxSelect.addSprite(id, sprite);
   }
 
-  select(ids: number[], append: boolean) {
+  select(ids: number[], append: boolean, follow: boolean) {
     if (
+      follow &&
       !append &&
       ids.length > 0 &&
       this.selected.length > 0 &&
