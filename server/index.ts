@@ -23,7 +23,7 @@ server.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 
-const gameEngine = new StarwatchGameEngine({ traceLevel: Lib.Trace.TRACE_ALL });
+const gameEngine = new StarwatchGameEngine({ traceLevel: Lib.Trace.TRACE_NONE });
 const serverEngine = new ServerEngine(io, gameEngine);
 
 serverEngine.start();
