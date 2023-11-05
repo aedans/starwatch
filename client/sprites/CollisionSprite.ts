@@ -1,10 +1,9 @@
 import { Graphics, Point } from "pixi.js";
-import { GameObject, PhysicsEngine } from "lance-gg";
-import StarwatchGameEngine from "../../common/StarwatchGameEngine";
 import CollisionEntity from "../../common/CollisionEntity";
+import Entity from "../../common/Entity";
 
 export default class CollisionSprite extends Graphics {
-  constructor(object: GameObject<StarwatchGameEngine, PhysicsEngine>) {
+  constructor(object: Entity) {
     super();
 
     const entity = object as CollisionEntity;

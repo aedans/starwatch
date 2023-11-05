@@ -44,7 +44,7 @@ export default abstract class Entity extends PhysicalObject2D<
     super(gameEngine, undefined, props);
   }
 
-  canSelect = true;
+  isDecorative = false;
 
   onAddToWorld(): void {
     this.physicsObj = new this.gameEngine.physicsEngine.p2.Body({

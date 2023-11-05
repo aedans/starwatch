@@ -56,7 +56,9 @@ export default class UI extends Container {
     document.body.addEventListener("keydown", (e) => {
       if (e.key.toLowerCase() == "f2") {
         this.select(
-          (gameEngine.world.queryObjects({}) as Entity[]).map((x) => x.id),
+          (gameEngine.world.queryObjects({}) as Entity[])
+            .filter((x) => !x.isDecorative)
+            .map((x) => x.id),
           false
         );
       }
@@ -126,7 +128,7 @@ export default class UI extends Container {
     this.hotkeyPanel.draw();
   }
 
-  addSprite(id: number, sprite: StarwatchSprite) {
+  addSprite(id: number, sprite: Container) {
     const glowFilter = new GlowFilter({ quality: 1, color: 0x00ff00 });
     glowFilter.enabled = false;
     this.glowFilters.set(id, glowFilter);
@@ -150,7 +152,9 @@ export default class UI extends Container {
       this.selected.length > 0 &&
       JSON.stringify(ids) == JSON.stringify(this.selected)
     ) {
-      const entities = (gameEngine.world.queryObjects({ ids }) as Entity[]).filter(x => x.canSelect);
+      const entities = (gameEngine.world.queryObjects({}) as Entity[]).filter(
+        (x) =>! x.isDecorative && ids.includes(x.id)
+      );
       const entity = entities[Math.floor(Math.random() * entities.length)];
       viewport.moveCenter(entity.position.x, entity.position.y);
     }

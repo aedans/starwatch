@@ -77,6 +77,10 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     }
   }
 
+  getEntity(id: number) {
+    return this.world.queryObject({ id }) as Entity;
+  }
+
   serverInit() {
     const { map } = parser.parse(
       fs.readFileSync(`./public/assets/1v1.tmx`).toString()
@@ -114,18 +118,5 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
         );
       }
     }
-
-    // const physicsObj = new this.physicsEngine.p2.Body({
-    //   mass: 0,
-    //   position: [90, 90],
-    // });
-
-    // physicsObj.addShape(
-    //   new this.physicsEngine.p2.Convex({
-    //     vertices: [[0,0], [10,0], [10, 10], [0, 10]],
-    //   })
-    // );
-
-    // this.physicsEngine.world.addBody(physicsObj);
   }
 }

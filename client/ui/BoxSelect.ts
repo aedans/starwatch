@@ -1,11 +1,10 @@
-import { Sprite, Texture } from "pixi.js";
-import StarwatchSprite from "../StarwatchSprite";
+import { Container, Sprite, Texture } from "pixi.js";
 import { gameEngine, ui, viewport } from "..";
 import Entity from "../../common/Entity";
 import { OutlineFilter } from "@pixi/filter-outline";
 
 export default class thisSelect extends Sprite {
-  sprites = new Map<number, StarwatchSprite>();
+  sprites = new Map<number, Container>();
 
   constructor() {
     super(Texture.WHITE);
@@ -87,7 +86,7 @@ export default class thisSelect extends Sprite {
     });
   }
 
-  addSprite(id: number, sprite: StarwatchSprite) {
+  addSprite(id: number, sprite: Container) {
     this.sprites.set(id, sprite);
   }
 }

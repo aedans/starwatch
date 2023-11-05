@@ -4,7 +4,7 @@ import Entity from "../../common/Entity";
 import { gameEngine, viewport } from "..";
 
 export default class Minimap extends Container {
-  icons = new Map<number, Sprite>();
+  icons = new Map<number, Container>();
   viewportSprite = new Sprite(Texture.WHITE);
 
   constructor() {
@@ -38,7 +38,7 @@ export default class Minimap extends Container {
     }
   }
 
-  addSprite(id: number, sprite: StarwatchSprite) {
+  addSprite(id: number, sprite: Container) {
     const icon = this.addChild(new Sprite(Texture.WHITE));
     icon.tint = 0xffffff;
     icon.x = sprite.x;

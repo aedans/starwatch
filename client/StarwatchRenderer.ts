@@ -4,13 +4,13 @@ import StarwatchClientEngine from "./StarwatchClientEngine";
 import SpriteFactory from "./SpriteFactory";
 import { ui, viewport } from ".";
 import Entity from "../common/Entity";
-import StarwatchSprite from "./StarwatchSprite";
+import { Container } from "pixi.js";
 
 export default class StarwatchRenderer extends Renderer<
   StarwatchGameEngine,
   StarwatchClientEngine
 > {
-  sprites = new Map<number, StarwatchSprite>();
+  sprites = new Map<number, Container>();
   spriteFactory = new SpriteFactory();
 
   draw(t: number, dt?: number | undefined): void {
@@ -32,11 +32,14 @@ export default class StarwatchRenderer extends Renderer<
   }
 
   addObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {
-    const sprite = this.spriteFactory.createSprite(obj);
+    const entity = obj as Entity;
+    const sprite = this.spriteFactory.createSprite(entity);
     viewport.addChild(sprite);
     this.sprites.set(obj.id, sprite);
 
-    ui.addSprite(obj.id, sprite);
+    if (!entity.isDecorative) {
+      ui.addSprite(obj.id, sprite);
+    }
   }
 
   removeObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {

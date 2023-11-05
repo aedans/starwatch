@@ -14,7 +14,7 @@ export default class CollisionEntity extends Entity {
     this.pathStr = JSON.stringify(path);
   }
 
-  canSelect: boolean = false;
+  isDecorative: boolean = true;
 
   abilities: AbilityMap = {};
 
