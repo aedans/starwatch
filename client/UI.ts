@@ -153,7 +153,7 @@ export default class UI extends Container {
       JSON.stringify(ids) == JSON.stringify(this.selected)
     ) {
       const entities = (gameEngine.world.queryObjects({}) as Entity[]).filter(
-        (x) =>! x.isDecorative && ids.includes(x.id)
+        (x) => !x.isDecorative && ids.includes(x.id)
       );
       const entity = entities[Math.floor(Math.random() * entities.length)];
       viewport.moveCenter(entity.position.x, entity.position.y);
