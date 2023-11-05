@@ -13,6 +13,7 @@ import UI from "./UI";
 import { addStats } from "pixi-stats";
 import StarwatchMap from "./StarwatchMap";
 import MapNavmesh from "./MapNavmesh";
+import { loadTMX } from "../common/TMXLoader";
 
 document.body.addEventListener("contextmenu", (e) => {
   e.preventDefault();
@@ -45,7 +46,10 @@ if (localStorage.getItem("debug") == "true") {
   Ticker.shared.add(stats.update, stats, UPDATE_PRIORITY.UTILITY);
 }
 
-const { map, tileset } = await StarwatchMap.load("1v1");
+const { map, tileset } = await loadTMX(
+  "1v1",
+  async (s) => await (await fetch(s)).text()
+);
 
 const worldWidth = Number.parseInt(map.width) * 10;
 const worldHeight = Number.parseInt(map.height) * 10;

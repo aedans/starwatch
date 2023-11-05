@@ -12,6 +12,7 @@ export default class Minimap extends Container {
 
     this.sortableChildren = true;
 
+    this.scale.set(.5, .5);
     this.viewportSprite.tint = 0x555555;
     this.viewportSprite.alpha = 0.5;
     this.viewportSprite.zIndex = 1;

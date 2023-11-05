@@ -8,6 +8,9 @@ import {
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import James from "./james/James";
 import Entity, { AbilityKey } from "./Entity";
+import CollisionEntity from "./CollisionEntity";
+import fs from "fs";
+import { TMXMap, loadTMX, parser } from "./TMXLoader";
 
 export type StarwatchInput =
   | {
@@ -36,6 +39,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   registerClasses(serializer: Serializer): void {
+    serializer.registerClass(CollisionEntity);
     serializer.registerClass(James);
   }
 
@@ -74,6 +78,32 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   serverInit() {
+    const { map } = parser.parse(
+      fs.readFileSync(`./public/assets/1v1.tmx`).toString()
+    ) as TMXMap;
+
+    const objectgroup = map.objectgroup.find((x) => x.name == "collisions")!;
+
+    for (const object of objectgroup.object) {
+      const points = object.polygon.points
+        .split(" ")
+        .map((p) => p.split(",").map((x) => Number.parseInt(x)));
+
+      this.addObjectToWorld(
+        new CollisionEntity(
+          this,
+          {
+            playerId: -1,
+            position: new TwoVector(
+              Number.parseInt(object.x),
+              Number.parseInt(object.y)
+            ),
+          },
+          points
+        )
+      );
+    }
+
     for (let x = 1; x <= 2; x++) {
       for (let y = 1; y <= 2; y++) {
         this.addObjectToWorld(
@@ -84,5 +114,18 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
         );
       }
     }
+
+    // const physicsObj = new this.physicsEngine.p2.Body({
+    //   mass: 0,
+    //   position: [90, 90],
+    // });
+
+    // physicsObj.addShape(
+    //   new this.physicsEngine.p2.Convex({
+    //     vertices: [[0,0], [10,0], [10, 10], [0, 10]],
+    //   })
+    // );
+
+    // this.physicsEngine.world.addBody(physicsObj);
   }
 }

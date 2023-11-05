@@ -1,90 +1,6 @@
-import { XMLParser } from "fast-xml-parser";
 import { Texture } from "pixi.js";
 import { CompositeTilemap } from "@pixi/tilemap";
-
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  alwaysCreateTextNode: false,
-  textNodeName: "text",
-});
-
-export interface TMXMap {
-  map: Map;
-}
-
-interface Map {
-  tileset: TilesetRef;
-  layer: Layer;
-  objectgroup: ObjectGroup;
-  version: string;
-  tiledversion: string;
-  orientation: string;
-  renderorder: string;
-  width: string;
-  height: string;
-  tilewidth: string;
-  tileheight: string;
-  infinite: string;
-  nextlayerid: string;
-  nextobjectid: string;
-}
-
-interface Layer {
-  data: Data;
-  id: string;
-  name: string;
-  width: string;
-  height: string;
-}
-
-interface ObjectGroup {
-  id: string;
-  name: string;
-  object: Object[];
-}
-
-interface Object {
-  id: string;
-  x: string;
-  y: string;
-  polygon?: Polygon;
-}
-
-interface Polygon {
-  points: string;
-}
-
-interface Data {
-  text: string;
-  encoding: string;
-}
-
-interface TilesetRef {
-  firstgid: string;
-  source: string;
-}
-
-export interface TSXTileset {
-  tileset: Tileset;
-}
-
-interface Tileset {
-  image: Image;
-  version: string;
-  tiledversion: string;
-  name: string;
-  tilewidth: string;
-  tileheight: string;
-  tilecount: string;
-  columns: string;
-}
-
-interface Image {
-  source: string;
-  width: string;
-  height: string;
-}
+import { TMXMap, TSXTileset } from "../common/TMXLoader";
 
 export default class StarwatchMap extends CompositeTilemap {
   constructor(
@@ -119,15 +35,5 @@ export default class StarwatchMap extends CompositeTilemap {
         });
       }
     }
-  }
-
-  static async load(name: string) {
-    const { map } = parser.parse(
-      await (await fetch(`/assets/${name}.tmx`)).text()
-    ) as TMXMap;
-    const { tileset } = parser.parse(
-      await (await fetch(`/assets/${map.tileset.source}`)).text()
-    ) as TSXTileset;
-    return { map, tileset };
   }
 }

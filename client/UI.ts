@@ -8,8 +8,9 @@ import Minimap from "./ui/Minimap";
 import HotkeyPanel from "./ui/HotkeyPanel";
 import BoxSelect from "./ui/BoxSelect";
 import Entity from "../common/Entity";
-import StarwatchMap, { TMXMap, TSXTileset } from "./StarwatchMap";
+import StarwatchMap from "./StarwatchMap";
 import MapNavmesh from "./MapNavmesh";
+import { TMXMap, TSXTileset } from "../common/TMXLoader";
 
 export default class UI extends Container {
   glowFilters = new Map<number, GlowFilter>();
@@ -149,7 +150,7 @@ export default class UI extends Container {
       this.selected.length > 0 &&
       JSON.stringify(ids) == JSON.stringify(this.selected)
     ) {
-      const entities = gameEngine.world.queryObjects({ ids }) as Entity[];
+      const entities = (gameEngine.world.queryObjects({ ids }) as Entity[]).filter(x => x.canSelect);
       const entity = entities[Math.floor(Math.random() * entities.length)];
       viewport.moveCenter(entity.position.x, entity.position.y);
     }

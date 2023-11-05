@@ -1,6 +1,6 @@
-import { Container, Graphics, Point, Polygon, Sprite, Texture } from "pixi.js";
-import { TMXMap } from "./StarwatchMap";
+import { Container, Graphics, Point } from "pixi.js";
 import { NavMesh, PolyPoints } from "navmesh";
+import { TMXMap } from "../common/TMXLoader";
 
 export default class MapNavmesh extends Container {
   navmesh: NavMesh;
@@ -9,8 +9,9 @@ export default class MapNavmesh extends Container {
     super();
 
     const polygons: PolyPoints[] = [];
-    for (const object of tmxmap.objectgroup.object.filter(o => o.polygon)) {
-      const points = object.polygon!.points
+    const objectgroup = tmxmap.objectgroup.find((x) => x.name == "navmesh")!;
+    for (const object of objectgroup.object.filter((o) => o.polygon)) {
+      const points = object.polygon.points
         .split(" ")
         .map((p) => p.split(","))
         .map(([x, y]) => ({ x: Number.parseInt(x), y: Number.parseInt(y) }));
