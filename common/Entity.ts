@@ -69,6 +69,9 @@ export default abstract class Entity extends PhysicalObject2D<
   speed: number = 0;
 
   abilities: AbilityMap = {
+    a: (engine, entity, action) => {
+      return this.abilities.m?.(engine, entity,action);
+    },
     m: (engine, entity, action) => {
       const dx = action.x - entity.position.x;
       const dy = action.y - entity.position.y;

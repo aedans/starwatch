@@ -44,11 +44,12 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
+    console.log(playerId);
     const inputs = JSON.parse(inputDesc.input) as StarwatchInput[];
     for (const input of inputs) {
       if (input.type == "add") {
         const object = this.world.queryObject({ id: input.selected }) as Entity;
-        if (object != null) {
+        if (object != null && object.playerId == playerId) {
           object.addAction({
             ability: input.ability,
             x: input.x,
@@ -59,7 +60,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       } else if (input.type == "clear") {
         for (const id of input.selected) {
           const object = this.world.queryObject({ id }) as Entity;
-          if (object != null) {
+          if (object != null && object.playerId == playerId) {
             object.clearActions();
           }
         }
@@ -108,14 +109,16 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       );
     }
 
-    for (let x = 1; x <= 2; x++) {
-      for (let y = 1; y <= 2; y++) {
-        this.addObjectToWorld(
-          new James(this, {
-            playerId: 0,
-            position: new TwoVector(100 + x, 100 + y),
-          })
-        );
+    for (let id = 0; id <= 1; id++) {
+      for (let x = 1; x <= 2; x++) {
+        for (let y = 1; y <= 2; y++) {
+          this.addObjectToWorld(
+            new James(this, {
+              playerId: id,
+              position: new TwoVector(100 + (50 * id) + x, 100 + y),
+            })
+          );
+        }
       }
     }
   }

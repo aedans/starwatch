@@ -1,8 +1,9 @@
 import http from "http";
 import express from "express";
 import{ Server } from "socket.io";
-import { Lib, ServerEngine } from "lance-gg";
+import { Lib } from "lance-gg";
 import StarwatchGameEngine from "../common/StarwatchGameEngine";
+import StarwatchServerEngine from "./StarwatchServerEngine";
 
 const port = process.env.PORT || 8080;
 
@@ -24,6 +25,6 @@ server.listen(port, () => {
 });
 
 const gameEngine = new StarwatchGameEngine({ traceLevel: Lib.Trace.TRACE_NONE });
-const serverEngine = new ServerEngine(io, gameEngine);
+const serverEngine = new StarwatchServerEngine(io, gameEngine);
 
 serverEngine.start();

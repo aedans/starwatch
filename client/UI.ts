@@ -61,7 +61,10 @@ export default class UI extends Container {
       if (e.key.toLowerCase() == "f2") {
         this.select(
           (gameEngine.world.queryObjects({}) as Entity[])
-            .filter((x) => !x.isDecorative)
+            .filter(
+              (x) =>
+                !x.isDecorative && x.playerId.toString() == gameEngine.playerId
+            )
             .map((x) => x.id),
           false,
           true
@@ -134,7 +137,12 @@ export default class UI extends Container {
   }
 
   addSprite(id: number, sprite: Container) {
-    const glowFilter = new GlowFilter({ quality: 1, color: 0x00ff00 });
+    const color =
+      gameEngine.getEntity(id).playerId.toString() == gameEngine.playerId
+        ? 0x00ff00
+        : 0xff0000;
+
+    const glowFilter = new GlowFilter({ quality: 1, color });
     glowFilter.enabled = false;
     this.glowFilters.set(id, glowFilter);
 
