@@ -143,6 +143,17 @@ export default class UI extends Container {
   }
 
   select(ids: number[], append: boolean) {
+    if (
+      !append &&
+      ids.length > 0 &&
+      this.selected.length > 0 &&
+      JSON.stringify(ids) == JSON.stringify(this.selected)
+    ) {
+      const entities = gameEngine.world.queryObjects({ ids }) as Entity[];
+      const entity = entities[Math.floor(Math.random() * entities.length)];
+      viewport.moveCenter(entity.position.x, entity.position.y);
+    }
+
     if (this.selected && !append) {
       for (const selected of this.selected) {
         this.glowFilters.get(selected)!.enabled = false;
