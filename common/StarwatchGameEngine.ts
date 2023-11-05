@@ -44,7 +44,6 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
-    console.log(playerId);
     const inputs = JSON.parse(inputDesc.input) as StarwatchInput[];
     for (const input of inputs) {
       if (input.type == "add") {

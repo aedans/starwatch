@@ -74,7 +74,7 @@ export default class thisSelect extends Sprite {
           );
           const sameType = (
             gameEngine.world.queryObjects({}) as Entity[]
-          ).filter((e) => Object.getPrototypeOf(e) == type);
+          ).filter((e) => Object.getPrototypeOf(e) == type && e.playerId.toString() == gameEngine.playerId);
           ui.select(
             sameType.map((x) => x.id),
             e.shiftKey,
