@@ -1,4 +1,4 @@
-import { Container, Texture } from "pixi.js";
+import { Container, Point, Texture } from "pixi.js";
 import FullscreenButton from "./ui/FullscreenButton";
 import { GlowFilter } from "@pixi/filter-glow";
 import StarwatchSprite from "./StarwatchSprite";
@@ -30,8 +30,10 @@ export default class UI extends Container {
     document.body.addEventListener("contextmenu", (e) => {
       const inputs: StarwatchInput[] = [];
       for (const selected of ui.selected) {
-        const entity = gameEngine.world.queryObject({ id: selected }) as Entity;
-        const world = viewport.toWorld(e.clientX, e.clientY);
+        const entity = gameEngine.world.queryObject({
+          id: selected,
+        }) as Entity;
+        const world = this.toWorld(e.clientX, e.clientY);
         const path = this.mapNavmesh.navmesh.findPath(entity.position, world);
         inputs.push({ type: "clear", selected: [selected] });
         for (const entry of path?.slice(1) ?? [world]) {
@@ -46,6 +48,7 @@ export default class UI extends Container {
         }
       }
       clientEngine.sendInput(JSON.stringify(inputs), {});
+
       e.preventDefault();
     });
 
@@ -99,11 +102,19 @@ export default class UI extends Container {
     this.resize();
   }
 
+  toWorld(x: number, y: number) {
+    if (this.minimap.getBounds().contains(x, y)) {
+      return this.minimap.toLocal(new Point(x, y));
+    } else {
+      return viewport.toWorld(x, y);
+    }
+  }
+
   selected: number[] = [];
 
   resize() {
     this.minimap.x = 0;
-    this.minimap.y = window.innerHeight - this.worldHeight;
+    this.minimap.y = window.innerHeight - this.minimap.height;
 
     this.hotkeyPanel.x = window.innerWidth - 200;
     this.hotkeyPanel.y = window.innerHeight - 200;

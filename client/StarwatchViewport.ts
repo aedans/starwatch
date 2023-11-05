@@ -39,10 +39,10 @@ export default class StarwatchViewport extends Viewport {
 
     Ticker.shared.add((delta) => {
       if (
-        clientX < 200 ||
-        clientY < 200 ||
-        clientX > window.innerWidth - 200 ||
-        clientY > window.innerHeight - 200
+        clientX < 10 ||
+        clientY < 10 ||
+        clientX > window.innerWidth - 10 ||
+        clientY > window.innerHeight - 10
       ) {
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;

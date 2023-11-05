@@ -10,7 +10,6 @@ export default class Minimap extends Container {
   constructor() {
     super();
 
-    this.scale.x = this.scale.y = 0.5;
     this.sortableChildren = true;
 
     this.viewportSprite.tint = 0x555555;
@@ -33,6 +32,7 @@ export default class Minimap extends Container {
       if (object != null) {
         sprite.x = object.position.x;
         sprite.y = object.position.y;
+        sprite.rotation = object.angle;
       }
     }
   }
@@ -42,6 +42,8 @@ export default class Minimap extends Container {
     icon.tint = 0xffffff;
     icon.x = sprite.x;
     icon.y = sprite.y;
+    icon.anchor.set(.5, .5);
+    icon.scale.set(.25, .25);
     this.icons.set(id, icon);
   }
 }
