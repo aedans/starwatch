@@ -126,13 +126,20 @@ export default class UI extends Container {
     this.minimap.draw();
     this.hotkeyPanel.draw();
   }
+
   ability(x: number, y: number, ability: AbilityKey) {
     const inputs: StarwatchInput[] = [];
     for (const selected of this.selected) {
       const entity = gameEngine.getEntity(selected);
-      const world = this.toWorld(x, y);
       const path: { x: number; y: number }[] = [];
+      let end: { x: number; y: number } = this.toWorld(x, y);
       let start: { x: number; y: number } = entity.position;
+
+      if (!this.mapNavmesh.navmesh.isPointInMesh(end)) {
+        end = this.mapNavmesh.navmesh.findClosestMeshPoint(
+          new Vector2(end.x, end.y)
+        ).point!;
+      }
 
       if (!this.mapNavmesh.navmesh.isPointInMesh(start)) {
         start = this.mapNavmesh.navmesh.findClosestMeshPoint(
@@ -142,10 +149,8 @@ export default class UI extends Container {
       }
 
       path.push(
-        ...(this.mapNavmesh.navmesh.findPath(start, world) ?? [world])
+        ...(this.mapNavmesh.navmesh.findPath(start, end) ?? [end])
       );
-
-      console.log(path);
 
       inputs.push({ type: "clear", selected: [selected] });
       for (const entry of path.slice(1, -1)) {
