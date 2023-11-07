@@ -17,7 +17,7 @@ export default class thisSelect extends Sprite {
     let isSelect = false;
     let isMouseDown = false;
 
-    document.body.addEventListener("mousedown", (e) => {      
+    document.body.addEventListener("mousedown", (e) => {
       if (e.button == 0) {
         isMouseDown = true;
 
@@ -69,12 +69,14 @@ export default class thisSelect extends Sprite {
           ui.selected.length > 0 &&
           JSON.stringify(ids) == JSON.stringify(ui.selected)
         ) {
-          const type = Object.getPrototypeOf(
-            gameEngine.world.queryObject({ id: ids[0] })
-          );
-          const sameType = (
-            gameEngine.world.queryObjects({}) as Entity[]
-          ).filter((e) => Object.getPrototypeOf(e) == type && e.playerId.toString() == gameEngine.playerId);
+          const type = Object.getPrototypeOf(gameEngine.getEntity(ids[0]));
+          const sameType = gameEngine
+            .getEntities()
+            .filter(
+              (e) =>
+                Object.getPrototypeOf(e) == type &&
+                e.playerId.toString() == gameEngine.playerId
+            );
           ui.select(
             sameType.map((x) => x.id),
             e.shiftKey,

@@ -1,16 +1,16 @@
 import { Container, Point, Texture } from "pixi.js";
 import FullscreenButton from "./ui/FullscreenButton";
 import { GlowFilter } from "@pixi/filter-glow";
-import StarwatchSprite from "./StarwatchSprite";
 import { clientEngine, gameEngine, viewport } from ".";
 import { StarwatchInput } from "../common/StarwatchGameEngine";
 import Minimap from "./ui/Minimap";
 import HotkeyPanel from "./ui/HotkeyPanel";
 import BoxSelect from "./ui/BoxSelect";
-import Entity from "../common/Entity";
+import { AbilityKey } from "../common/Entity";
 import StarwatchMap from "./StarwatchMap";
 import MapNavmesh from "./MapNavmesh";
 import { TMXMap, TSXTileset } from "../common/TMXLoader";
+import Vector2 from "navmesh/src/math/vector-2";
 
 export default class UI extends Container {
   glowFilters = new Map<number, GlowFilter>();
@@ -28,28 +28,16 @@ export default class UI extends Container {
   ) {
     super();
 
-    document.body.addEventListener("contextmenu", (e) => {
-      const inputs: StarwatchInput[] = [];
-      for (const selected of ui.selected) {
-        const entity = gameEngine.world.queryObject({
-          id: selected,
-        }) as Entity;
-        const world = this.toWorld(e.clientX, e.clientY);
-        const path = this.mapNavmesh.navmesh.findPath(entity.position, world);
-        inputs.push({ type: "clear", selected: [selected] });
-        for (const entry of path?.slice(1) ?? [world]) {
-          inputs.push({
-            type: "add",
-            ability: "m",
-            x: entry.x,
-            y: entry.y,
-            group: ui.selected.length,
-            selected,
-          });
-        }
-      }
-      clientEngine.sendInput(JSON.stringify(inputs), {});
+    let clientX = 0;
+    let clientY = 0;
 
+    window.addEventListener("mousemove", (e) => {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    });
+
+    document.body.addEventListener("contextmenu", (e) => {
+      this.ability(e.clientX, e.clientY, "m");
       e.preventDefault();
     });
 
@@ -60,7 +48,8 @@ export default class UI extends Container {
 
       if (e.key.toLowerCase() == "f2") {
         this.select(
-          (gameEngine.world.queryObjects({}) as Entity[])
+          gameEngine
+            .getEntities()
             .filter(
               (x) =>
                 !x.isDecorative && x.playerId.toString() == gameEngine.playerId
@@ -71,21 +60,23 @@ export default class UI extends Container {
         );
       }
 
-      if (ui.selected != null) {
-        if (e.key == "s") {
-          const input: StarwatchInput = {
-            type: "clear",
-            selected: ui.selected,
-          };
-          clientEngine.sendInput(JSON.stringify([input]), {});
-        }
+      if ("qwerasdfzxcvm".includes(e.key)) {
+        this.ability(clientX, clientY, e.key as AbilityKey);
+      }
 
-        if ("1234567890".includes(e.key)) {
-          if (e.ctrlKey) {
-            this.controlGroups.set(e.key, ui.selected);
-          } else if (this.controlGroups.has(e.key)) {
-            ui.select(this.controlGroups.get(e.key) ?? [], e.shiftKey, true);
-          }
+      if (e.key == "s") {
+        const input: StarwatchInput = {
+          type: "clear",
+          selected: ui.selected,
+        };
+        clientEngine.sendInput(JSON.stringify([input]), {});
+      }
+
+      if ("1234567890".includes(e.key)) {
+        if (e.ctrlKey) {
+          this.controlGroups.set(e.key, ui.selected);
+        } else if (this.controlGroups.has(e.key)) {
+          ui.select(this.controlGroups.get(e.key) ?? [], e.shiftKey, true);
         }
       }
     });
@@ -135,6 +126,50 @@ export default class UI extends Container {
     this.minimap.draw();
     this.hotkeyPanel.draw();
   }
+  ability(x: number, y: number, ability: AbilityKey) {
+    const inputs: StarwatchInput[] = [];
+    for (const selected of this.selected) {
+      const entity = gameEngine.getEntity(selected);
+      const world = this.toWorld(x, y);
+      const path: { x: number; y: number }[] = [];
+      let start: { x: number; y: number } = entity.position;
+
+      if (!this.mapNavmesh.navmesh.isPointInMesh(start)) {
+        start = this.mapNavmesh.navmesh.findClosestMeshPoint(
+          new Vector2(start.x, start.y)
+        ).point!;
+        path.unshift(new Vector2(start.x, start.y));
+      }
+
+      path.push(
+        ...(this.mapNavmesh.navmesh.findPath(start, world) ?? [world])
+      );
+
+      console.log(path);
+
+      inputs.push({ type: "clear", selected: [selected] });
+      for (const entry of path.slice(1, -1)) {
+        inputs.push({
+          type: "add",
+          ability: "m",
+          x: entry.x,
+          y: entry.y,
+          group: this.selected.length,
+          selected,
+        });
+      }
+
+      inputs.push({
+        type: "add",
+        ability,
+        x: path[path.length - 1].x,
+        y: path[path.length - 1].y,
+        group: this.selected.length,
+        selected,
+      });
+    }
+    clientEngine.sendInput(JSON.stringify(inputs), {});
+  }
 
   addSprite(id: number, sprite: Container) {
     const color =
@@ -166,14 +201,14 @@ export default class UI extends Container {
       this.selected.length > 0 &&
       JSON.stringify(ids) == JSON.stringify(this.selected)
     ) {
-      const entities = (gameEngine.world.queryObjects({}) as Entity[]).filter(
-        (x) => !x.isDecorative && ids.includes(x.id)
-      );
+      const entities = gameEngine
+        .getEntities()
+        .filter((x) => !x.isDecorative && ids.includes(x.id));
       const entity = entities[Math.floor(Math.random() * entities.length)];
       viewport.moveCenter(entity.position.x, entity.position.y);
     }
 
-    if (this.selected && !append) {
+    if (!append) {
       for (const selected of this.selected) {
         this.glowFilters.get(selected)!.enabled = false;
       }

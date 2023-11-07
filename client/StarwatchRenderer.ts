@@ -17,9 +17,7 @@ export default class StarwatchRenderer extends Renderer<
     super.draw(t, dt);
 
     for (const [id, sprite] of this.sprites.entries()) {
-      const object = this.gameEngine.world.queryObject({
-        id,
-      }) as Entity;
+      const object = this.gameEngine.getEntity(id);
 
       if (object != null) {
         sprite.rotation = object.angle;

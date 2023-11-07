@@ -12,7 +12,7 @@ export default class Minimap extends Container {
 
     this.sortableChildren = true;
 
-    this.scale.set(.5, .5);
+    this.scale.set(0.5, 0.5);
     this.viewportSprite.tint = 0x555555;
     this.viewportSprite.alpha = 0.5;
     this.viewportSprite.zIndex = 1;
@@ -26,9 +26,7 @@ export default class Minimap extends Container {
     this.viewportSprite.height = viewport.worldScreenHeight;
 
     for (const [id, sprite] of this.icons.entries()) {
-      const object = gameEngine.world.queryObject({
-        id,
-      }) as Entity;
+      const object = gameEngine.getEntity(id);
 
       if (object != null) {
         sprite.x = object.position.x;
@@ -43,8 +41,8 @@ export default class Minimap extends Container {
     icon.tint = 0xffffff;
     icon.x = sprite.x;
     icon.y = sprite.y;
-    icon.anchor.set(.5, .5);
-    icon.scale.set(.25, .25);
+    icon.anchor.set(0.5, 0.5);
+    icon.scale.set(0.25, 0.25);
     this.icons.set(id, icon);
   }
 }

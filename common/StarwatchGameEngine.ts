@@ -47,7 +47,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     const inputs = JSON.parse(inputDesc.input) as StarwatchInput[];
     for (const input of inputs) {
       if (input.type == "add") {
-        const object = this.world.queryObject({ id: input.selected }) as Entity;
+        const object = this.getEntity(input.selected);
         if (object != null && object.playerId == playerId) {
           object.addAction({
             ability: input.ability,
@@ -58,7 +58,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
         }
       } else if (input.type == "clear") {
         for (const id of input.selected) {
-          const object = this.world.queryObject({ id }) as Entity;
+          const object = this.getEntity(id);
           if (object != null && object.playerId == playerId) {
             object.clearActions();
           }
@@ -68,13 +68,17 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   postStep() {
-    for (const entity of this.world.queryObjects({}) as Entity[]) {
+    for (const entity of this.getEntities()) {
       entity.refreshFromPhysics();
       entity.velocity = new TwoVector(0, 0);
       entity.angularVelocity = 0;
       entity.refreshToPhysics();
       entity.postStep(this);
     }
+  }
+
+  getEntities() {
+    return this.world.queryObjects({}) as Entity[];
   }
 
   getEntity(id: number) {
