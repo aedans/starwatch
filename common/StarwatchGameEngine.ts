@@ -6,7 +6,7 @@ import {
   TwoVector,
 } from "lance-gg";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
-import James from "./james/James";
+import JamesEntity from "./james/JamesEntity";
 import Entity, { AbilityKey } from "./Entity";
 import CollisionEntity from "./CollisionEntity";
 import fs from "fs";
@@ -40,7 +40,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
 
   registerClasses(serializer: Serializer): void {
     serializer.registerClass(CollisionEntity);
-    serializer.registerClass(James);
+    serializer.registerClass(JamesEntity);
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
@@ -116,7 +116,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       for (let x = 1; x <= 2; x++) {
         for (let y = 1; y <= 2; y++) {
           this.addObjectToWorld(
-            new James(this, {
+            new JamesEntity(this, {
               playerId: id,
               position: new TwoVector(100 + (50 * id) + x, 100 + y),
             })

@@ -1,6 +1,5 @@
 import { Container, Point, Texture } from "pixi.js";
 import FullscreenButton from "./ui/FullscreenButton";
-import { GlowFilter } from "@pixi/filter-glow";
 import { clientEngine, gameEngine, viewport } from ".";
 import { StarwatchInput } from "../common/StarwatchGameEngine";
 import Minimap from "./ui/Minimap";
@@ -11,9 +10,10 @@ import StarwatchMap from "./StarwatchMap";
 import MapNavmesh from "./MapNavmesh";
 import { TMXMap, TSXTileset } from "../common/TMXLoader";
 import Vector2 from "navmesh/src/math/vector-2";
+import StarwatchSprite from "./StarwatchSprite";
 
 export default class UI extends Container {
-  glowFilters = new Map<number, GlowFilter>();
+  sprites = new Map<number, StarwatchSprite>();
   minimap = new Minimap();
   hotkeyPanel = new HotkeyPanel();
   boxSelect = new BoxSelect();
@@ -176,23 +176,8 @@ export default class UI extends Container {
     clientEngine.sendInput(JSON.stringify(inputs), {});
   }
 
-  addSprite(id: number, sprite: Container) {
-    const color =
-      gameEngine.getEntity(id).playerId.toString() == gameEngine.playerId
-        ? 0x00ff00
-        : 0xff0000;
-
-    const glowFilter = new GlowFilter({ quality: 1, color });
-    glowFilter.enabled = false;
-    this.glowFilters.set(id, glowFilter);
-
-    sprite.interactive = true;
-
-    if (!sprite.filters) {
-      sprite.filters = [];
-    }
-
-    sprite.filters!.push(glowFilter);
+  addSprite(id: number, sprite: StarwatchSprite) {
+    this.sprites.set(id, sprite);
 
     this.minimap.addSprite(id, sprite);
     this.boxSelect.addSprite(id, sprite);
@@ -215,12 +200,12 @@ export default class UI extends Container {
 
     if (!append) {
       for (const selected of this.selected) {
-        this.glowFilters.get(selected)!.enabled = false;
+        this.sprites.get(selected)!.setSelected(false);
       }
     }
 
     for (const id of ids) {
-      this.glowFilters.get(id)!.enabled = true;
+      this.sprites.get(id)!.setSelected(true);
     }
 
     if (append) {

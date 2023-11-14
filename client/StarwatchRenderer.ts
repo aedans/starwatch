@@ -32,11 +32,13 @@ export default class StarwatchRenderer extends Renderer<
   addObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {
     const entity = obj as Entity;
     const sprite = this.spriteFactory.createSprite(entity);
-    viewport.addChild(sprite);
-    this.sprites.set(obj.id, sprite);
+    if (sprite != undefined) {
+      viewport.addChild(sprite);
+      this.sprites.set(obj.id, sprite);
 
-    if (!entity.isDecorative) {
-      ui.addSprite(obj.id, sprite);
+      if (!entity.isDecorative) {
+        ui.addSprite(obj.id, sprite);
+      }
     }
   }
 
