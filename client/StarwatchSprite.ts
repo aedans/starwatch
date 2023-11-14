@@ -1,6 +1,6 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import Entity from "../common/Entity";
-import { gameEngine } from ".";
+import { gameEngine, ui } from ".";
 import { GlowFilter } from "@pixi/filter-glow";
 
 export default class StarwatchSprite<
@@ -36,6 +36,12 @@ export default class StarwatchSprite<
   setHovered(hovered: boolean) {
     this.hovered = hovered;
     this.selectFilter.enabled = this.selected || this.hovered;
+
+    if (hovered) {
+      ui.hovered = this.entity.id;
+    } else {
+      ui.hovered = null;
+    }
   }
 
   addSprite(texture: Texture) {

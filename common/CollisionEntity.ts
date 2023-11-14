@@ -1,6 +1,7 @@
 import { BaseTypes, PhysicalObject2DProps } from "lance-gg";
 import StarwatchGameEngine from "./StarwatchGameEngine";
-import Entity, { AbilityMap } from "./Entity";
+import Entity from "./Entity";
+import { AbilityMap } from "./Ability";
 
 export default class CollisionEntity extends Entity {
   pathStr: string;
@@ -16,7 +17,7 @@ export default class CollisionEntity extends Entity {
 
   isDecorative: boolean = true;
 
-  abilities: AbilityMap = {};
+  abilities: AbilityMap<CollisionEntity> = {};
 
   get path(): number[][] {
     return JSON.parse(this.pathStr);

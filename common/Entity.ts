@@ -1,40 +1,8 @@
-import {
-  BaseTypes,
-  PhysicalObject2D,
-  PhysicalObject2DProps,
-  TwoVector,
-} from "lance-gg";
+import { BaseTypes, PhysicalObject2D, PhysicalObject2DProps } from "lance-gg";
 import StarwatchGameEngine from "./StarwatchGameEngine";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
-
-export type AbilityKey =
-  | "q"
-  | "w"
-  | "e"
-  | "r"
-  | "a"
-  | "d"
-  | "f"
-  | "z"
-  | "x"
-  | "c"
-  | "v"
-  | "m";
-
-export type Action = {
-  ability: AbilityKey;
-  x: number;
-  y: number;
-  group: number;
-};
-
-export type Ability = (
-  engine: StarwatchGameEngine,
-  entity: Entity,
-  action: Action
-) => boolean | undefined;
-
-export type AbilityMap = { [key in AbilityKey]?: Ability };
+import { AbilityMap, Action } from "./Ability";
+import MoveAbility from "./MoveAbility";
 
 export default abstract class Entity extends PhysicalObject2D<
   StarwatchGameEngine,
@@ -68,32 +36,8 @@ export default abstract class Entity extends PhysicalObject2D<
 
   speed: number = 0;
 
-  abilities: AbilityMap = {
-    a: (engine, entity, action) => {
-      return this.abilities.m?.(engine, entity,action);
-    },
-    m: (engine, entity, action) => {
-      const dx = action.x - entity.position.x;
-      const dy = action.y - entity.position.y;
-
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < Math.sqrt((action.group * 8) / Math.PI)) {
-        entity.velocity = new TwoVector(0, 0);
-        entity.refreshToPhysics();
-        return false;
-      }
-
-      const angle = Math.atan2(dy, dx);
-      entity.angle = angle;
-      const speed = Math.min(this.speed, this.speed * (distance / 2));
-      entity.velocity = new TwoVector(
-        Math.cos(angle) * speed,
-        Math.sin(angle) * speed
-      );
-      entity.refreshToPhysics();
-
-      return true;
-    },
+  abilities: AbilityMap<Entity> = {
+    m: new MoveAbility(),
   };
 
   public queue: string[] = [];
@@ -101,7 +45,7 @@ export default abstract class Entity extends PhysicalObject2D<
   postStep(gameEngine: StarwatchGameEngine) {
     if (this.queue.length > 0) {
       const action = JSON.parse(this.queue[this.queue.length - 1]) as Action;
-      if (!this.abilities[action.ability]?.(gameEngine, this, action)) {
+      if (!this.abilities[action.ability]?.update?.(gameEngine, this, action)) {
         this.queue.pop();
       }
     }

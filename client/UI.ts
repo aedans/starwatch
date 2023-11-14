@@ -1,16 +1,16 @@
 import { Container, Point, Texture } from "pixi.js";
 import FullscreenButton from "./ui/FullscreenButton";
 import { clientEngine, gameEngine, viewport } from ".";
-import { StarwatchInput } from "../common/StarwatchGameEngine";
 import Minimap from "./ui/Minimap";
 import HotkeyPanel from "./ui/HotkeyPanel";
 import BoxSelect from "./ui/BoxSelect";
-import { AbilityKey } from "../common/Entity";
 import StarwatchMap from "./StarwatchMap";
 import MapNavmesh from "./MapNavmesh";
 import { TMXMap, TSXTileset } from "../common/TMXLoader";
 import Vector2 from "navmesh/src/math/vector-2";
 import StarwatchSprite from "./StarwatchSprite";
+import { Input } from "../common/StarwatchGameEngine";
+import { AbilityKey, ActionTarget } from "../common/Ability";
 
 export default class UI extends Container {
   sprites = new Map<number, StarwatchSprite>();
@@ -19,6 +19,9 @@ export default class UI extends Container {
   boxSelect = new BoxSelect();
   controlGroups = new Map<string, number[]>();
   mapNavmesh: MapNavmesh;
+  hovered: number | null = null;
+  clientX = 0;
+  clientY = 0;
 
   constructor(
     public map: TMXMap["map"],
@@ -28,16 +31,13 @@ export default class UI extends Container {
   ) {
     super();
 
-    let clientX = 0;
-    let clientY = 0;
-
     window.addEventListener("mousemove", (e) => {
-      clientX = e.clientX;
-      clientY = e.clientY;
+      this.clientX = e.clientX;
+      this.clientY = e.clientY;
     });
 
     document.body.addEventListener("contextmenu", (e) => {
-      this.ability(e.clientX, e.clientY, "m");
+      this.ability("m");
       e.preventDefault();
     });
 
@@ -61,11 +61,11 @@ export default class UI extends Container {
       }
 
       if ("qwerasdfzxcvm".includes(e.key)) {
-        this.ability(clientX, clientY, e.key as AbilityKey);
+        this.ability(e.key as AbilityKey);
       }
 
       if (e.key == "s") {
-        const input: StarwatchInput = {
+        const input: Input = {
           type: "clear",
           selected: ui.selected,
         };
@@ -127,12 +127,15 @@ export default class UI extends Container {
     this.hotkeyPanel.draw();
   }
 
-  ability(x: number, y: number, ability: AbilityKey) {
-    const inputs: StarwatchInput[] = [];
+  ability(ability: AbilityKey) {
+    const inputs: Input[] = [];
     for (const selected of this.selected) {
       const entity = gameEngine.getEntity(selected);
       const path: { x: number; y: number }[] = [];
-      let end: { x: number; y: number } = this.toWorld(x, y);
+      let end: { x: number; y: number } = this.toWorld(
+        this.clientX,
+        this.clientY
+      );
       let start: { x: number; y: number } = entity.position;
 
       if (!this.mapNavmesh.navmesh.isPointInMesh(end)) {
@@ -148,27 +151,35 @@ export default class UI extends Container {
         path.unshift(new Vector2(start.x, start.y));
       }
 
-      path.push(
-        ...(this.mapNavmesh.navmesh.findPath(start, end) ?? [end])
-      );
+      path.push(...(this.mapNavmesh.navmesh.findPath(start, end) ?? [end]));
 
       inputs.push({ type: "clear", selected: [selected] });
       for (const entry of path.slice(1, -1)) {
         inputs.push({
           type: "add",
-          ability: "m",
-          x: entry.x,
-          y: entry.y,
+          ability: ability == "a" ? "a" : "m",
+          target: {
+            type: "point",
+            x: entry.x,
+            y: entry.y,
+          },
           group: this.selected.length,
           selected,
         });
       }
 
+      const target: ActionTarget = this.hovered
+        ? { type: "unit", id: this.hovered }
+        : {
+            type: "point",
+            x: path[path.length - 1].x,
+            y: path[path.length - 1].y,
+          };
+
       inputs.push({
         type: "add",
         ability,
-        x: path[path.length - 1].x,
-        y: path[path.length - 1].y,
+        target,
         group: this.selected.length,
         selected,
       });

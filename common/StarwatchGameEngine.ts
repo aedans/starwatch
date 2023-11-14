@@ -7,20 +7,17 @@ import {
 } from "lance-gg";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import JamesEntity from "./james/JamesEntity";
-import Entity, { AbilityKey } from "./Entity";
+import Entity from "./Entity";
 import CollisionEntity from "./CollisionEntity";
 import fs from "fs";
-import { TMXMap, loadTMX, parser } from "./TMXLoader";
+import { TMXMap, parser } from "./TMXLoader";
+import { Action } from "./Ability";
 
-export type StarwatchInput =
-  | {
+export type Input =
+  | (Action & {
       type: "add";
-      ability: AbilityKey;
-      x: number;
-      y: number;
-      group: number;
       selected: number;
-    }
+    })
   | {
       type: "clear";
       selected: number[];
@@ -44,17 +41,12 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   processInput(inputDesc: InputData, playerId: number): void {
-    const inputs = JSON.parse(inputDesc.input) as StarwatchInput[];
+    const inputs = JSON.parse(inputDesc.input) as Input[];
     for (const input of inputs) {
       if (input.type == "add") {
         const object = this.getEntity(input.selected);
         if (object != null && object.playerId == playerId) {
-          object.addAction({
-            ability: input.ability,
-            x: input.x,
-            y: input.y,
-            group: input.group,
-          });
+          object.addAction(input);
         }
       } else if (input.type == "clear") {
         for (const id of input.selected) {
@@ -118,7 +110,7 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
           this.addObjectToWorld(
             new JamesEntity(this, {
               playerId: id,
-              position: new TwoVector(100 + (50 * id) + x, 100 + y),
+              position: new TwoVector(100 + 50 * id + x, 100 + y),
             })
           );
         }

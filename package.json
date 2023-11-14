@@ -8,7 +8,7 @@
     "client": "vite build --watch",
     "server": "nodemon --esm server/index.ts",
     "start": "nodemon --esm server/index.ts",
-    "dev": "concurrently \"npm run client\" \"npm run server\""
+    "dev": "concurrently --kill-others \"npm run client\" \"npm run server\""
   },
   "repository": {
     "type": "git",
