@@ -2,17 +2,16 @@ import { BaseTypes, PhysicalObject2D, PhysicalObject2DProps } from "lance-gg";
 import StarwatchGameEngine from "./StarwatchGameEngine";
 import StarwatchPhysicsEngine from "./StarwatchPhysicsEngine";
 import { AbilityMap, Action } from "./Ability";
-import MoveAbility from "./MoveAbility";
 
 export default abstract class Entity extends PhysicalObject2D<
   StarwatchGameEngine,
   StarwatchPhysicsEngine
 > {
+  isDecorative = false;
+  
   constructor(gameEngine: StarwatchGameEngine, props: PhysicalObject2DProps) {
     super(gameEngine, undefined, props);
   }
-
-  isDecorative = false;
 
   onAddToWorld(): void {
     this.physicsObj = new this.gameEngine.physicsEngine.p2.Body({
@@ -34,11 +33,7 @@ export default abstract class Entity extends PhysicalObject2D<
     gameEngine.physicsEngine.world.removeBody(this.physicsObj);
   }
 
-  speed: number = 0;
-
-  abilities: AbilityMap<Entity> = {
-    m: new MoveAbility(),
-  };
+  abstract abilities: AbilityMap<Entity>;
 
   public queue: string[] = [];
 

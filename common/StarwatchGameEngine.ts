@@ -12,6 +12,7 @@ import CollisionEntity from "./CollisionEntity";
 import fs from "fs";
 import { TMXMap, parser } from "./TMXLoader";
 import { Action } from "./Ability";
+import { Box, Point, QuadTree } from "js-quadtree";
 
 export type Input =
   | (Action & {
@@ -24,6 +25,8 @@ export type Input =
     };
 
 export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngine> {
+  quadtree: QuadTree = new QuadTree(new Box(0, 0, 30 * 20, 24 * 20));
+
   constructor(options: GameEngineOptions) {
     super(options);
 
@@ -60,6 +63,12 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
   }
 
   postStep() {
+    this.quadtree.clear();
+
+    for (const entity of this.getEntities()) {
+      this.quadtree.insert(new Point(entity.position.x, entity.position.y, entity));
+    }
+
     for (const entity of this.getEntities()) {
       entity.refreshFromPhysics();
       entity.velocity = new TwoVector(0, 0);

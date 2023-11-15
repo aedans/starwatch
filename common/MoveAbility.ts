@@ -4,6 +4,10 @@ import Entity from "./Entity";
 import StarwatchGameEngine from "./StarwatchGameEngine";
 
 export default class MoveAbility<T extends Entity> extends Ability<T> {
+  constructor(public settings: { speed: number }) {
+    super();
+  }
+
   update(
     engine: StarwatchGameEngine,
     entity: T,
@@ -31,7 +35,7 @@ export default class MoveAbility<T extends Entity> extends Ability<T> {
 
     const angle = Math.atan2(dy, dx);
     entity.angle = angle;
-    const speed = Math.min(entity.speed, entity.speed * (distance / 2));
+    const speed = Math.min(this.settings.speed, this.settings.speed * (distance / 2));
     entity.velocity = new TwoVector(
       Math.cos(angle) * speed,
       Math.sin(angle) * speed
