@@ -6,7 +6,7 @@ import StarwatchGameEngine from "./StarwatchGameEngine";
 export default class AttackMoveAbility<T extends Entity> extends Ability<T> {
   constructor(
     public move: () => Ability<T> | undefined,
-    public settings: { range: number }
+    public settings: { range: number; damage: number }
   ) {
     super();
   }
@@ -20,7 +20,7 @@ export default class AttackMoveAbility<T extends Entity> extends Ability<T> {
       const near = engine.quadtree.query(
         new Circle(entity.position.x, entity.position.y, this.settings.range)
       );
-  
+
       let nearest: Point | null = null;
       let nearestDistance = Infinity;
       for (const point of near.filter(
@@ -34,9 +34,10 @@ export default class AttackMoveAbility<T extends Entity> extends Ability<T> {
           nearest = point;
         }
       }
-  
+
       if (nearest != null) {
-        return false;
+        nearest.data.health -= this.settings.damage;
+        return true;
       } else {
         return this.move()?.update(engine, entity, action);
       }
@@ -46,7 +47,8 @@ export default class AttackMoveAbility<T extends Entity> extends Ability<T> {
       const dy = entity.position.y - targetEntity.position.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
       if (distance < this.settings.range) {
-        return false;
+        targetEntity.health -= this.settings.damage;
+        return targetEntity.health > 0;
       } else {
         return this.move()?.update(engine, entity, action);
       }

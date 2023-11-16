@@ -8,9 +8,18 @@ export default abstract class Entity extends PhysicalObject2D<
   StarwatchPhysicsEngine
 > {
   isDecorative = false;
-  
-  constructor(gameEngine: StarwatchGameEngine, props: PhysicalObject2DProps) {
+  queue: string[] = [];
+  health: number;
+
+  abstract abilities: AbilityMap<Entity>;
+
+  constructor(
+    gameEngine: StarwatchGameEngine,
+    props: PhysicalObject2DProps,
+    public settings: { maxHealth: number }
+  ) {
     super(gameEngine, undefined, props);
+    this.health = settings.maxHealth;
   }
 
   onAddToWorld(): void {
@@ -33,13 +42,15 @@ export default abstract class Entity extends PhysicalObject2D<
     gameEngine.physicsEngine.world.removeBody(this.physicsObj);
   }
 
-  abstract abilities: AbilityMap<Entity>;
-
-  public queue: string[] = [];
-
   postStep(gameEngine: StarwatchGameEngine) {
     if (this.queue.length > 0) {
       const action = JSON.parse(this.queue[this.queue.length - 1]) as Action;
+
+      if (action.target.type == "unit" && !gameEngine.getEntity(action.target.id)) {
+        this.queue.pop();
+        return;
+      }
+
       if (!this.abilities[action.ability]?.update?.(gameEngine, this, action)) {
         this.queue.pop();
       }
@@ -65,6 +76,7 @@ export default abstract class Entity extends PhysicalObject2D<
           type: BaseTypes.TYPES.LIST,
           itemType: BaseTypes.TYPES.STRING,
         },
+        health: { type: BaseTypes.TYPES.INT32 },
       },
       super.netScheme
     );
@@ -73,5 +85,6 @@ export default abstract class Entity extends PhysicalObject2D<
   syncTo(other: any): void {
     super.syncTo(other);
     this.queue = other.queue;
+    this.health = other.health;
   }
 }

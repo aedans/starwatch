@@ -1,6 +1,7 @@
 import {
   GameEngine,
   GameEngineOptions,
+  GameObject,
   InputData,
   Serializer,
   TwoVector,
@@ -66,7 +67,9 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     this.quadtree.clear();
 
     for (const entity of this.getEntities()) {
-      this.quadtree.insert(new Point(entity.position.x, entity.position.y, entity));
+      this.quadtree.insert(
+        new Point(entity.position.x, entity.position.y, entity)
+      );
     }
 
     for (const entity of this.getEntities()) {
@@ -75,6 +78,12 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
       entity.angularVelocity = 0;
       entity.refreshToPhysics();
       entity.postStep(this);
+    }
+
+    for (const entity of this.getEntities()) {
+      if (entity.health <= 0) {
+        this.removeObjectFromWorld(entity.id.toString());
+      }
     }
   }
 
@@ -114,8 +123,8 @@ export default class StarwatchGameEngine extends GameEngine<StarwatchPhysicsEngi
     }
 
     for (let id = 0; id <= 1; id++) {
-      for (let x = 1; x <= 2; x++) {
-        for (let y = 1; y <= 2; y++) {
+      for (let x = 1; x <= 5; x++) {
+        for (let y = 1; y <= 5; y++) {
           this.addObjectToWorld(
             new JamesEntity(this, {
               playerId: id,

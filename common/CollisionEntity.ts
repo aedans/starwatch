@@ -11,7 +11,7 @@ export default class CollisionEntity extends Entity {
     props: PhysicalObject2DProps,
     path: number[][]
   ) {
-    super(gameEngine, props);
+    super(gameEngine, props, { maxHealth: 100 });
     this.pathStr = JSON.stringify(path);
   }
 
