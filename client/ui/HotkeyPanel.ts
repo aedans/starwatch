@@ -7,6 +7,7 @@ export default class HotkeyPanel extends Container {
     const panel = this.addChild(new Sprite(Texture.WHITE));
     panel.tint = 0x222222;
     panel.width = panel.height = 200;
+    this.zIndex = 1;
   }
 
   draw() {

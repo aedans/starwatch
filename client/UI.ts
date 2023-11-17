@@ -11,9 +11,11 @@ import Vector2 from "navmesh/src/math/vector-2";
 import StarwatchSprite from "./StarwatchSprite";
 import { Input } from "../common/StarwatchGameEngine";
 import { AbilityKey, ActionTarget } from "../common/Ability";
+import HealthBar from "./HealthBar";
 
 export default class UI extends Container {
   sprites = new Map<number, StarwatchSprite>();
+  healthBars = [] as HealthBar[];
   minimap = new Minimap();
   hotkeyPanel = new HotkeyPanel();
   boxSelect = new BoxSelect();
@@ -85,6 +87,7 @@ export default class UI extends Container {
     this.addChild(this.hotkeyPanel);
     this.addChild(this.boxSelect);
     this.addChild(new FullscreenButton());
+    this.sortableChildren = true;
 
     this.mapNavmesh = new MapNavmesh(map);
 
@@ -125,6 +128,12 @@ export default class UI extends Container {
   draw() {
     this.minimap.draw();
     this.hotkeyPanel.draw();
+
+    for (const healthBar of this.healthBars.values()) {
+      healthBar.draw();
+    }
+
+    this.healthBars = this.healthBars.filter((x) => !x.destroyed);
   }
 
   ability(ability: AbilityKey) {
@@ -189,6 +198,7 @@ export default class UI extends Container {
 
   addSprite(id: number, sprite: StarwatchSprite) {
     this.sprites.set(id, sprite);
+    this.healthBars.push(this.addChild(new HealthBar(sprite)));
 
     this.minimap.addSprite(id, sprite);
     this.boxSelect.addSprite(id, sprite);

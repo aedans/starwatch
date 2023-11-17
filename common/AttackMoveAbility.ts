@@ -43,10 +43,13 @@ export default class AttackMoveAbility<T extends Entity> extends Ability<T> {
       }
     } else {
       const targetEntity = engine.getEntity(action.target.id);
+      if (targetEntity.playerId == entity.playerId) {
+        return false;
+      }
       const dx = entity.position.x - targetEntity.position.x;
       const dy = entity.position.y - targetEntity.position.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < this.settings.range) {
+      if (distance < this.settings.range && targetEntity.playerId != entity.playerId) {
         targetEntity.health -= this.settings.damage;
         return targetEntity.health > 0;
       } else {

@@ -10,6 +10,7 @@ export default class StarwatchMap extends CompositeTilemap {
   ) {
     super();
 
+    this.zIndex = 1;
     for (const [string, row] of tmxmap.layer.data.text
       .split("\n")
       .map((a, i) => [a, i] as const)) {

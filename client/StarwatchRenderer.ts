@@ -4,26 +4,18 @@ import StarwatchClientEngine from "./StarwatchClientEngine";
 import SpriteFactory from "./SpriteFactory";
 import { ui, viewport } from ".";
 import Entity from "../common/Entity";
-import { Container } from "pixi.js";
 
 export default class StarwatchRenderer extends Renderer<
   StarwatchGameEngine,
   StarwatchClientEngine
 > {
-  sprites = new Map<number, Container>();
   spriteFactory = new SpriteFactory();
 
   draw(t: number, dt?: number | undefined): void {
     super.draw(t, dt);
 
-    for (const [id, sprite] of this.sprites.entries()) {
-      const object = this.gameEngine.getEntity(id);
-
-      if (object != null) {
-        sprite.rotation = object.angle;
-        sprite.x = object.position.x;
-        sprite.y = object.position.y;
-      }
+    for (const sprite of ui.sprites.values()) {
+      sprite.draw();
     }
 
     ui.draw();
@@ -34,7 +26,7 @@ export default class StarwatchRenderer extends Renderer<
     const sprite = this.spriteFactory.createSprite(entity);
     if (sprite != undefined) {
       viewport.addChild(sprite);
-      this.sprites.set(obj.id, sprite);
+      ui.sprites.set(obj.id, sprite);
 
       if (!entity.isDecorative) {
         ui.addSprite(obj.id, sprite);
@@ -43,7 +35,8 @@ export default class StarwatchRenderer extends Renderer<
   }
 
   removeObject(obj: GameObject<StarwatchGameEngine, PhysicsEngine>): void {
-    this.sprites.get(obj.id)?.destroy();
-    this.sprites.delete(obj.id);
+    ui.sprites.get(obj.id)?.destroy();
+    ui.sprites.delete(obj.id);
+    ui.selected = ui.selected.filter(x => x != obj.id);
   }
 }

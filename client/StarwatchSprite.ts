@@ -2,6 +2,7 @@ import { Container, Sprite, Texture } from "pixi.js";
 import Entity from "../common/Entity";
 import { gameEngine, ui } from ".";
 import { GlowFilter } from "@pixi/filter-glow";
+import HealthStarwatchSprite from "./HealthBar";
 
 export default class StarwatchSprite<
   T extends Entity = Entity
@@ -26,6 +27,12 @@ export default class StarwatchSprite<
 
     this.on("mouseenter", () => this.setHovered(true));
     this.on("mouseleave", () => this.setHovered(false));
+  }
+
+  draw() {
+    this.rotation = this.entity.angle;
+    this.x = this.entity.position.x;
+    this.y = this.entity.position.y;
   }
 
   setSelected(selected: boolean) {

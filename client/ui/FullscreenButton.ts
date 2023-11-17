@@ -13,6 +13,7 @@ export default class FullscreenButton extends Container {
     this.addChild(button);
     
     this.interactive = true;
+    this.zIndex = 1;
 
     this.on("click", function () {
       if (!document.fullscreenElement) {

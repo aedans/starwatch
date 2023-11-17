@@ -13,6 +13,7 @@ export default class thisSelect extends Sprite {
     this.alpha = 0.5;
     this.visible = false;
     this.filters = [new OutlineFilter(1, 0x00ff00)];
+    this.zIndex = 1;
 
     let isSelect = false;
     let isMouseDown = false;
