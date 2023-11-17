@@ -126,6 +126,10 @@ export default class UI extends Container {
   }
 
   draw() {
+    for (const sprite of this.sprites.values()) {
+      sprite.draw();
+    }
+
     this.minimap.draw();
     this.hotkeyPanel.draw();
 

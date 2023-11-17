@@ -13,11 +13,6 @@ export default class StarwatchRenderer extends Renderer<
 
   draw(t: number, dt?: number | undefined): void {
     super.draw(t, dt);
-
-    for (const sprite of ui.sprites.values()) {
-      sprite.draw();
-    }
-
     ui.draw();
   }
 

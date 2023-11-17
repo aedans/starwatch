@@ -1,6 +1,4 @@
 import { Container, Sprite, Texture } from "pixi.js";
-import StarwatchSprite from "../StarwatchSprite";
-import Entity from "../../common/Entity";
 import { gameEngine, viewport } from "..";
 
 export default class Minimap extends Container {
@@ -16,7 +14,7 @@ export default class Minimap extends Container {
     this.scale.set(0.5, 0.5);
     this.viewportSprite.tint = 0x555555;
     this.viewportSprite.alpha = 0.5;
-    this.viewportSprite.zIndex = 1;
+    this.viewportSprite.zIndex = 3;
     this.addChild(this.viewportSprite);
   }
 
@@ -44,6 +42,7 @@ export default class Minimap extends Container {
     icon.y = sprite.y;
     icon.anchor.set(0.5, 0.5);
     icon.scale.set(0.25, 0.25);
+    icon.zIndex = 2;
     this.icons.set(id, icon);
   }
 }
